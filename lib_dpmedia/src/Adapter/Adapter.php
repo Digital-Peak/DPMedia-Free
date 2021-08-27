@@ -7,8 +7,6 @@
 
 namespace DigitalPeak\Library\DPMedia\Adapter;
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\ThinHTTP;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Date\Date;
@@ -23,7 +21,6 @@ use Joomla\Registry\Registry;
  */
 abstract class Adapter implements AdapterInterface
 {
-	protected $params;
 	protected $mimeTypeMapping;
 	protected $http;
 	protected $db;
@@ -31,10 +28,11 @@ abstract class Adapter implements AdapterInterface
 	protected $name;
 	protected $supportedThumbnailImageFormats = ['jpg', 'jpeg', 'png', 'tiff', 'tif', 'gif', 'bmp'];
 	protected $useLastPathSegment             = true;
+	private $config;
 
-	public function __construct(Registry $params, ThinHTTP $http, MimeTypeMapping $mimeTypeMapping, DatabaseInterface $db, CMSApplication $app)
+	public function __construct(Registry $config, ThinHTTP $http, MimeTypeMapping $mimeTypeMapping, DatabaseInterface $db, CMSApplication $app)
 	{
-		$this->params          = $params;
+		$this->config          = $config;
 		$this->http            = $http;
 		$this->mimeTypeMapping = $mimeTypeMapping;
 		$this->db              = $db;
@@ -63,6 +61,31 @@ abstract class Adapter implements AdapterInterface
 	 */
 	abstract protected function fetchFiles(string $path = '/'): array;
 
+	/**
+	 * Fetch the files for the given path and search needle.
+	 *
+	 * @param string $path
+	 * @param string $needle
+	 * @param bool   $recursive
+	 *
+	 * @return array
+	 */
+	abstract protected function fetchSearch(string $path, string $needle, bool $recursive = false): array;
+
+	/**
+	 * Fetch the url for the given path.
+	 *
+	 * @param string $path
+	 *
+	 * @return string
+	 */
+	protected function fetchUrl(string $path): string
+	{
+		$file = $this->getFile($path);
+
+		return $file && $file->url ? $file->url : '';
+	}
+
 	public function getFile(string $path = '/'): \stdClass
 	{
 		return $this->fetchFile($path);
@@ -71,6 +94,16 @@ abstract class Adapter implements AdapterInterface
 	public function getFiles(string $path = '/'): array
 	{
 		return $this->fetchFiles($path);
+	}
+
+	public function getUrl(string $path): string
+	{
+		return $this->fetchUrl($path);
+	}
+
+	public function search(string $path, string $needle, bool $recursive = false): array
+	{
+		return $this->fetchSearch($path, $needle, $recursive);
 	}
 
 	public function getResource(string $path)
@@ -108,21 +141,9 @@ abstract class Adapter implements AdapterInterface
 		throw new \Exception('Not implemented, please get the pro version.');
 	}
 
-	public function getUrl(string $path): string
-	{
-		$file = $this->getFile($path);
-
-		return $file && $file->url ? $file->url : '';
-	}
-
 	public function getAdapterName(): string
 	{
-		return $this->params->get('display_name');
-	}
-
-	public function search(string $path, string $needle, bool $recursive = false): array
-	{
-		return [];
+		return $this->getConfig()->get('display_name');
 	}
 
 	/**
@@ -153,7 +174,7 @@ abstract class Adapter implements AdapterInterface
 	{
 		// Append the root folder when in root
 		if (!$path || $path == '/' || !$this->useLastPathSegment) {
-			$path = rtrim($this->params->get('root_folder', '/'), '/') . '/' . $path;
+			$path = rtrim($this->getConfig()->get('root_folder', '/'), '/') . '/' . $path;
 		}
 
 		// Replace last /
@@ -195,7 +216,27 @@ abstract class Adapter implements AdapterInterface
 	}
 
 	/**
-	 * Updates the internal params. Can be used when an access token has changed.
+	 * Returns the config.
+	 *
+	 * @return Registry
+	 */
+	protected function getConfig(): Registry
+	{
+		return $this->config;
+	}
+
+	/**
+	 * Returns the name.
+	 *
+	 * @return string
+	 */
+	protected function getName(): string
+	{
+		return $this->name;
+	}
+
+	/**
+	 * Updates the internal params. Can be use D when an access token has changed.
 	 *
 	 * @param string $compareKey
 	 */
@@ -209,11 +250,11 @@ abstract class Adapter implements AdapterInterface
 		$pluginParams = new Registry($plugin->params);
 		$folders      = $pluginParams->get('folders');
 		foreach ($folders as $key => $folder) {
-			if ($folder->$compareKey != $this->params->get($compareKey)) {
+			if ($folder->$compareKey != $this->getConfig()->get($compareKey)) {
 				continue;
 			}
 
-			$folders->$key = $this->params->toObject();
+			$folders->$key = $this->getConfig()->toObject();
 		}
 
 		$query = $this->db->getQuery(true)

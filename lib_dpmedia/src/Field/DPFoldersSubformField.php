@@ -7,8 +7,6 @@
 
 namespace DigitalPeak\Library\DPMedia\Field;
 
-defined('_JEXEC') or die;
-
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Field\SubformField;
 use Joomla\CMS\HTML\HTMLHelper;

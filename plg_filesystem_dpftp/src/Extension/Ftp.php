@@ -7,8 +7,6 @@
 
 namespace DigitalPeak\Plugin\Filesystem\DPFtp\Extension;
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\Library\DPMedia\Extension\Media;
 use DigitalPeak\Plugin\Filesystem\DPFtp\FtpClientAwareInterface;
 use DigitalPeak\Plugin\Filesystem\DPFtp\FtpClientAwareTrait;

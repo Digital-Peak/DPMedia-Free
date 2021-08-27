@@ -5,8 +5,6 @@
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  */
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\Library\DPMedia\Service\MediaProvider;
 use DigitalPeak\Plugin\Filesystem\DPPexels\Extension\Pexels;
 

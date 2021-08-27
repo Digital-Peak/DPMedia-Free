@@ -7,8 +7,6 @@
 
 namespace DigitalPeak\Plugin\Filesystem\DPFtp;
 
-defined('_JEXEC') or die;
-
 use FtpClient\FtpClient;
 
 /**

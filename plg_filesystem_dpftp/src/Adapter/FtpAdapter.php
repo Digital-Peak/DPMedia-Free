@@ -7,16 +7,19 @@
 
 namespace DigitalPeak\Plugin\Filesystem\DPFtp\Adapter;
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\Library\DPMedia\Adapter\Adapter;
+use DigitalPeak\Library\DPMedia\Adapter\DownloadMediaTrait;
+use DigitalPeak\Library\DPMedia\Adapter\MimeTypeMapping;
 use DigitalPeak\Plugin\Filesystem\DPFtp\FtpClientAwareInterface;
 use DigitalPeak\Plugin\Filesystem\DPFtp\FtpClientAwareTrait;
-use Joomla\CMS\Filesystem\Folder;
+use DigitalPeak\ThinHTTP;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Filesystem\Path;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
+use Joomla\Database\DatabaseInterface;
+use Joomla\Registry\Registry;
 
 /**
  * Read only FTP adapter for Joomla 4 media manager.
@@ -24,10 +27,17 @@ use Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
 class FtpAdapter extends Adapter implements FtpClientAwareInterface
 {
 	use FtpClientAwareTrait;
+	use DownloadMediaTrait;
 
 	protected $useLastPathSegment = false;
 
-	public function fetchFile(string $path = '/'): \stdClass
+	public function __construct(Registry $config, ThinHTTP $http, MimeTypeMapping $mimeTypeMapping, DatabaseInterface $db, CMSApplication $app)
+	{
+		$config->set('local_media', 1);
+		parent::__construct($config, $http, $mimeTypeMapping, $db, $app);
+	}
+
+	protected function fetchFile(string $path = '/'): \stdClass
 	{
 		// Somehow on create operations $path has //
 		$path = Path::clean($path, '/');
@@ -41,7 +51,7 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 		return reset($file);
 	}
 
-	public function fetchFiles(string $path = '/'): array
+	protected function fetchFiles(string $path = '/'): array
 	{
 		if (pathinfo($path, PATHINFO_EXTENSION)) {
 			$path = dirname($path);
@@ -66,31 +76,12 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 		return $data;
 	}
 
-	public function getUrl(string $path, bool $force = false): string
+	protected function fetchUrl(string $path): string
 	{
-		return $this->download($this->getFile($path));
+		return rtrim(Uri::root(), '/') .  $this->download($this->getFile($path), $this->getConfig());
 	}
 
-	protected function download(\stdClass $file, bool $force = false)
-	{
-		$filePath = Path::clean('/media/plg_filesystem_dpftp/.cache/' . pathinfo($file->name, PATHINFO_FILENAME) . '-' . $file->modified_date . '.' . $file->extension, '/');
-
-		if (!file_exists(JPATH_SITE . $filePath) || $force) {
-			if (!file_exists(dirname(JPATH_SITE . $filePath))) {
-				Folder::create(dirname(JPATH_SITE . $filePath));
-			}
-
-			$this->connect();
-			$success = $this->getFtpClient()->get(JPATH_SITE . $filePath, $this->getPath($file->path), FTP_BINARY);
-			if ($success === false) {
-				throw new \Exception(error_get_last() ? error_get_last()['message'] : 'Error');
-			}
-		}
-
-		return Uri::root() . Path::clean($filePath, '/');
-	}
-
-	public function search(string $path, string $needle, bool $recursive = false): array
+	protected function fetchSearch(string $path, string $needle, bool $recursive = false): array
 	{
 		$files = $this->getFiles($path);
 
@@ -114,8 +105,8 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 			return;
 		}
 
-		$this->getFtpClient()->connect($this->params->get('host'), $this->params->get('ssl', 1), $this->params->get('port', 21));
-		$this->getFtpClient()->login($this->params->get('username'), $this->params->get('password'));
+		$this->getFtpClient()->connect($this->getConfig()->get('host'), $this->getConfig()->get('ssl', 1), $this->getConfig()->get('port', 21));
+		$this->getFtpClient()->login($this->getConfig()->get('username'), $this->getConfig()->get('password'));
 	}
 
 	/**
@@ -128,32 +119,49 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 	 */
 	private function getFileInfo(\stdClass $fileEntry, string $path): \stdClass
 	{
-		$file                          = new \stdClass();
-		$file->type                    = $fileEntry->type == 'file' ? 'file' : 'dir';
-		$file->name                    = $fileEntry->name;
-		$file->path                    = rtrim($path, '/') . '/' . $fileEntry->name;
-		$file->path                    = substr_replace($file->path, '', 0, strlen(rtrim($this->params->get('root_folder', '/'), '/')));
-		$file->size                    = !empty($fileEntry->size) ? $fileEntry->size : (!empty($fileEntry->sizd) ? $fileEntry->sizd : 0);
-		$file->width                   = 0;
-		$file->height                  = 0;
-		$file->create_date_formatted   = '';
-		$file->modified_date_formatted = '';
-		$file->create_date             = '';
-		$file->modified_date_formatted = HTMLHelper::_('date', $this->getDate($fileEntry->modify), $this->app->getLanguage()->_('DATE_FORMAT_LC5'));
-		$file->modified_date           = $fileEntry->modify;
-		$file->extension               = '';
-		$file->thumb_path              = '';
+		$file             = new \stdClass();
+		$file->type       = $fileEntry->type == 'file' ? 'file' : 'dir';
+		$file->name       = $fileEntry->name;
+		$file->path       = rtrim($path, '/') . '/' . $fileEntry->name;
+		$file->path       = substr_replace($file->path, '', 0, strlen(rtrim($this->getConfig()->get('root_folder', '/'), '/')));
+		$file->size       = !empty($fileEntry->size) ? $fileEntry->size : (!empty($fileEntry->sizd) ? $fileEntry->sizd : 0);
+		$file->width      = 0;
+		$file->height     = 0;
+		$file->extension  = '';
+		$file->thumb_path = '';
 
 		if ($file->type == 'file') {
 			$file->extension = pathinfo($file->name, PATHINFO_EXTENSION);
 			$file->mime_type = $this->mimeTypeMapping->getMimetype($file->extension);
 		}
 
+		$createDate = $this->getDate(!empty($fileEntry->modify) ? \DateTime::createFromFormat('YmdHis', $fileEntry->modify)->format('c') : null);
+		$updateDate = clone $createDate;
+
+		$file->create_date_formatted   = HTMLHelper::_('date', $createDate, $this->app->getLanguage()->_('DATE_FORMAT_LC5'));
+		$file->create_date             = $createDate->format('c');
+		$file->modified_date_formatted = HTMLHelper::_('date', $updateDate, $this->app->getLanguage()->_('DATE_FORMAT_LC5'));
+		$file->modified_date           = $updateDate->format('c');
+
 		if (in_array($file->extension, $this->supportedThumbnailImageFormats)) {
-			$file->url        = $this->download($file);
-			$file->thumb_path = $file->url;
+			$file->thumb_path = rtrim(Uri::root(), '/') .  $this->download(
+				$file,
+				new Registry([
+					'local_media_path'   => $this->getConfig()->get('local_image_thumb_path', '/images/dpftp/thumbs'),
+					'local_image_width'  => 120,
+					'local_image_height' => 120
+				])
+			);
 		}
 
 		return $file;
+	}
+
+	protected function getContent(\stdclass $file, Registry $config): string
+	{
+		$handle = fopen('php://temp', 'w+');
+		$this->getFtpClient()->fget($handle, $this->getPath($file->path), FTP_BINARY, 0);
+		rewind($handle);
+		return stream_get_contents($handle);
 	}
 }

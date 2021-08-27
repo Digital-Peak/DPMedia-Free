@@ -7,10 +7,10 @@
 
 namespace DigitalPeak\Plugin\Filesystem\DPPixabay\Adapter;
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\Library\DPMedia\Adapter\CacheFactoryAwareInterface;
 use DigitalPeak\Library\DPMedia\Adapter\CacheTrait;
+use DigitalPeak\Library\DPMedia\Adapter\LocalMediaTrait;
+use Joomla\Registry\Registry;
 
 /**
  * Cache Pixabay adapter for Joomla 4 media manager.
@@ -18,4 +18,10 @@ use DigitalPeak\Library\DPMedia\Adapter\CacheTrait;
 class PixabayAdapterWritable extends PixabayAdapter implements CacheFactoryAwareInterface
 {
 	use CacheTrait;
+	use LocalMediaTrait;
+
+	protected function getContent(\stdclass $file, Registry $config): string
+	{
+		return $this->http->get($file->url)->dp->body;
+	}
 }

@@ -7,9 +7,8 @@
 
 namespace DigitalPeak\Plugin\Filesystem\DPPexels\Adapter;
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\Library\DPMedia\Adapter\Adapter;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
 
 /**
@@ -17,7 +16,7 @@ use Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
  */
 class PexelsAdapter extends Adapter
 {
-	public function fetchFile(string $path = '/'): \stdClass
+	protected function fetchFile(string $path = '/'): \stdClass
 	{
 		try {
 			$response = $this->callAPI('/photos/' . $this->getId($path));
@@ -36,7 +35,7 @@ class PexelsAdapter extends Adapter
 		}
 	}
 
-	public function fetchFiles(string $path = '/'): array
+	protected function fetchFiles(string $path = '/'): array
 	{
 		if (pathinfo($path, PATHINFO_EXTENSION)) {
 			return [$this->getFile($path)];
@@ -44,10 +43,10 @@ class PexelsAdapter extends Adapter
 
 		$path = $this->getPath($path);
 
-		$params = ['query' => $this->params->get('search_query')];
+		$params = ['query' => $this->getConfig()->get('search_query')];
 
 		$pageSize = 80;
-		$limit    = $this->params->get('result_limit', 300);
+		$limit    = $this->getConfig()->get('result_limit', 300);
 
 		$data = [];
 		$page = 0;
@@ -74,11 +73,11 @@ class PexelsAdapter extends Adapter
 		return $data;
 	}
 
-	public function search(string $path, string $needle, bool $recursive = false): array
+	protected function fetchSearch(string $path, string $needle, bool $recursive = false): array
 	{
 		$params   = ['query' => $needle, 'collections' => $this->getId($path)];
 		$pageSize = 30;
-		$limit    = $this->params->get('result_limit', 300);
+		$limit    = $this->getConfig()->get('result_limit', 300);
 
 		$data = [];
 		$page = 0;
@@ -122,7 +121,7 @@ class PexelsAdapter extends Adapter
 			'https://api.pexels.com/v1' . $path . ($params ? '?' . http_build_query($params) : ''),
 			null,
 			null,
-			['Authorization: ' . $this->params->get('api_key')]
+			['Authorization: ' . $this->getConfig()->get('api_key')]
 		);
 
 		if ($response->dp->info->http_code >= 400) {
@@ -142,20 +141,25 @@ class PexelsAdapter extends Adapter
 	 */
 	private function getFileInfo(\stdClass $fileEntry, string $path): \stdClass
 	{
-		$file                          = new \stdClass();
-		$file->name                    = trim(str_replace(['-', '_', $fileEntry->id], ' ', ucfirst(basename($fileEntry->url))));
-		$file->extension               = 'jpg';
-		$file->mime_type               = $this->mimeTypeMapping->getMimetype($file->extension);
-		$file->type                    = 'file';
-		$file->path                    = '/' . $fileEntry->id . '.' . $file->extension;
-		$file->size                    = 0;
-		$file->width                   = 0;
-		$file->height                  = 0;
-		$file->create_date_formatted   = '';
-		$file->modified_date_formatted = '';
-		$file->create_date             = '';
-		$file->modified_date           = '';
-		$file->thumb_path              = '';
+		$file             = new \stdClass();
+		$file->name       = trim(str_replace(['-', '_', $fileEntry->id], ' ', ucfirst(basename($fileEntry->url))));
+		$file->extension  = 'jpg';
+		$file->mime_type  = $this->mimeTypeMapping->getMimetype($file->extension);
+		$file->type       = 'file';
+		$file->path       = '/' . $fileEntry->id . '.' . $file->extension;
+		$file->size       = 0;
+		$file->width      = 0;
+		$file->height     = 0;
+		$file->thumb_path = '';
+
+		// Date is fixed and in the past
+		$createDate = $this->getDate('2020-01-01');
+		$updateDate = clone $createDate;
+
+		$file->create_date_formatted   = HTMLHelper::_('date', $createDate, $this->app->getLanguage()->_('DATE_FORMAT_LC5'));
+		$file->create_date             = $createDate->format('c');
+		$file->modified_date_formatted = HTMLHelper::_('date', $updateDate, $this->app->getLanguage()->_('DATE_FORMAT_LC5'));
+		$file->modified_date           = $updateDate->format('c');
 
 		if (!empty($fileEntry->width)) {
 			$file->width = $fileEntry->width;

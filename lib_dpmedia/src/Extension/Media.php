@@ -7,8 +7,6 @@
 
 namespace DigitalPeak\Library\DPMedia\Extension;
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\Library\DPMedia\Adapter\CacheFactoryAwareInterface;
 use DigitalPeak\Library\DPMedia\Adapter\MimeTypeMapping;
 use DigitalPeak\ThinHTTP;

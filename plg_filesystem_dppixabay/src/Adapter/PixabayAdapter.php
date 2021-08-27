@@ -7,9 +7,8 @@
 
 namespace DigitalPeak\Plugin\Filesystem\DPPixabay\Adapter;
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\Library\DPMedia\Adapter\Adapter;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
 
 /**
@@ -17,7 +16,7 @@ use Joomla\Component\Media\Administrator\Exception\FileNotFoundException;
  */
 class PixabayAdapter extends Adapter
 {
-	public function fetchFile(string $path = '/'): \stdClass
+	protected function fetchFile(string $path = '/'): \stdClass
 	{
 		try {
 			$response = $this->callAPI(['id' => $this->getId($path)]);
@@ -36,7 +35,7 @@ class PixabayAdapter extends Adapter
 		}
 	}
 
-	public function fetchFiles(string $path = '/'): array
+	protected function fetchFiles(string $path = '/'): array
 	{
 		if (pathinfo($path, PATHINFO_EXTENSION)) {
 			return [$this->getFile($path)];
@@ -44,10 +43,10 @@ class PixabayAdapter extends Adapter
 
 		$path = $this->getPath($path);
 
-		$params = ['q' => $this->params->get('search_query')];
+		$params = ['q' => $this->getConfig()->get('search_query')];
 
 		$pageSize = 200;
-		$limit    = $this->params->get('result_limit', 300);
+		$limit    = $this->getConfig()->get('result_limit', 300);
 
 		$data = [];
 		$page = 0;
@@ -74,14 +73,14 @@ class PixabayAdapter extends Adapter
 		return $data;
 	}
 
-	public function search(string $path, string $needle, bool $recursive = false): array
+	protected function fetchSearch(string $path, string $needle, bool $recursive = false): array
 	{
 		$path = $this->getPath($path);
 
 		$params = ['q' => $needle];
 
 		$pageSize = 200;
-		$limit    = $this->params->get('result_limit', 300);
+		$limit    = $this->getConfig()->get('result_limit', 300);
 
 		$data = [];
 		$page = 0;
@@ -123,7 +122,7 @@ class PixabayAdapter extends Adapter
 	 */
 	protected function callAPI($params = [])
 	{
-		$params['key'] = $this->params->get('api_key');
+		$params['key'] = $this->getConfig()->get('api_key');
 		$response      = $this->http->get('https://pixabay.com/api/' . ($params ? '?' . http_build_query($params) : ''));
 
 		if ($response->dp->info->http_code >= 400) {
@@ -143,20 +142,25 @@ class PixabayAdapter extends Adapter
 	 */
 	private function getFileInfo(\stdClass $fileEntry, string $path): \stdClass
 	{
-		$file                          = new \stdClass();
-		$file->name                    = trim(str_replace(['-', '_', $fileEntry->id], ' ', ucfirst(basename($fileEntry->pageURL))));
-		$file->extension               = 'jpg';
-		$file->mime_type               = $this->mimeTypeMapping->getMimetype($file->extension);
-		$file->type                    = 'file';
-		$file->path                    = '/' . $fileEntry->id . '.' . $file->extension;
-		$file->size                    = 0;
-		$file->width                   = 0;
-		$file->height                  = 0;
-		$file->create_date_formatted   = '';
-		$file->modified_date_formatted = '';
-		$file->create_date             = '';
-		$file->modified_date           = '';
-		$file->thumb_path              = '';
+		$file             = new \stdClass();
+		$file->name       = trim(str_replace(['-', '_', $fileEntry->id], ' ', ucfirst(basename($fileEntry->pageURL))));
+		$file->extension  = 'jpg';
+		$file->mime_type  = $this->mimeTypeMapping->getMimetype($file->extension);
+		$file->type       = 'file';
+		$file->path       = '/' . $fileEntry->id . '.' . $file->extension;
+		$file->size       = 0;
+		$file->width      = 0;
+		$file->height     = 0;
+		$file->thumb_path = '';
+
+		// Date is fixed and in the past
+		$createDate = $this->getDate('2020-01-01');
+		$updateDate = clone $createDate;
+
+		$file->create_date_formatted   = HTMLHelper::_('date', $createDate, $this->app->getLanguage()->_('DATE_FORMAT_LC5'));
+		$file->create_date             = $createDate->format('c');
+		$file->modified_date_formatted = HTMLHelper::_('date', $updateDate, $this->app->getLanguage()->_('DATE_FORMAT_LC5'));
+		$file->modified_date           = $updateDate->format('c');
 
 		if (!empty($fileEntry->imageSize)) {
 			$file->size = $fileEntry->imageSize;

@@ -9,12 +9,13 @@
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>info@digital-peak.com</authorEmail>
 	<authorUrl>joomla.digital-peak.com</authorUrl>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<files>
 		<file id="lib_dpmedia" type="library">lib_dpmedia.zip</file>
 		<file id="plg_filesystem_dpftp" type="plugin" group="filesystem" client="site">plg_filesystem_dpftp.zip</file>
 		<file id="plg_filesystem_dppexels" type="plugin" group="filesystem" client="site">plg_filesystem_dppexels.zip</file>
 		<file id="plg_filesystem_dppixabay" type="plugin" group="filesystem" client="site">plg_filesystem_dppixabay.zip</file>
+		<file id="plg_media-action_dpfilter" type="plugin" group="media-action" client="site">plg_media-action_dpfilter.zip</file>
 	</files>
 	<scriptfile>script.php</scriptfile>
 	<updateservers>

@@ -7,8 +7,6 @@
 
 namespace DigitalPeak\Plugin\Filesystem\DPFtp\Adapter;
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\Library\DPMedia\Adapter\CacheFactoryAwareInterface;
 use DigitalPeak\Library\DPMedia\Adapter\CacheTrait;
 use DigitalPeak\Library\DPMedia\Adapter\StreamSupportTrait;
@@ -24,7 +22,10 @@ class FtpAdapterWritable extends FtpAdapter implements CacheFactoryAwareInterfac
 
 	public function getResource(string $path)
 	{
-		return fopen(JPATH_SITE . str_replace(Uri::root(), '', $this->download($this->getFile($path), true)), 'r');
+		$handle = fopen('php://temp', 'w+');
+		$this->getFtpClient()->fget($handle, $this->getPath($path), FTP_BINARY, 0);
+		rewind($handle);
+		return $handle;
 	}
 
 	public function createFolder(string $name, string $path): string

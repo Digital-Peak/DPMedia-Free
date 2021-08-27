@@ -7,8 +7,6 @@
 
 namespace DigitalPeak\Library\DPMedia\Service;
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\Library\DPMedia\Adapter\MimeTypeMapping;
 use DigitalPeak\ThinHTTP;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;

@@ -7,7 +7,6 @@
 
 namespace DigitalPeak\Library\DPMedia\Adapter;
 
-defined('_JEXEC') or die;
 
 /**
  * Stream support for media adapters.

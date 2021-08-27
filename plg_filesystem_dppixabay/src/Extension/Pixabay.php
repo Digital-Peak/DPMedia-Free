@@ -7,8 +7,6 @@
 
 namespace DigitalPeak\Plugin\Filesystem\DPPixabay\Extension;
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\Library\DPMedia\Extension\Media;
 
 class Pixabay extends Media

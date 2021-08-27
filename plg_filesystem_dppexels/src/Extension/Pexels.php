@@ -7,8 +7,6 @@
 
 namespace DigitalPeak\Plugin\Filesystem\DPPexels\Extension;
 
-defined('_JEXEC') or die;
-
 use DigitalPeak\Library\DPMedia\Extension\Media;
 
 class Pexels extends Media

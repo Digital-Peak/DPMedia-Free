@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset name="dpfilter" label="PLG_MEDIA-ACTION_DPFILTER_LABEL">
+		<field name="dpfilter_quality" type="number" min="0" max="100" step="1" default="80" filter="integer"
+			label="PLG_MEDIA-ACTION_DPFILTER_QUALITY_LABEL"/>
+		<field type="spacer" hr="true"/>
+		<field name="dpfilter_presets" type="dpfilterpresets" addfieldprefix="DigitalPeak\Plugin\MediaAction\DPFilter\Field"
+			label="PLG_MEDIA-ACTION_DPFILTER_PRESETS_LABEL" description="PLG_MEDIA-ACTION_DPFILTER_PRESETS_DESC"/>
+		<field name="dpfilter_sepia_percentage" type="number" min="0" max="100" step="1" default="0" filter="integer"
+			label="PLG_MEDIA-ACTION_DPFILTER_SEPIA_PERCENTAGE_LABEL"/>
+		<field name="dpfilter_blur_length" type="text" default="0px"
+			label="PLG_MEDIA-ACTION_DPFILTER_BLUR_LENGTH_LABEL"/>
+		<field name="dpfilter_brightness_percentage" type="number" min="0" max="100" step="1" default="100" filter="integer"
+			label="PLG_MEDIA-ACTION_DPFILTER_BRIGHTNESS_PERCENTAGE_LABEL"/>
+		<field name="dpfilter_contrast_percentage" type="number" min="0" max="1000" step="1" default="100" filter="integer"
+			label="PLG_MEDIA-ACTION_DPFILTER_CONTRAST_PERCENTAGE_LABEL"/>
+		<field name="dpfilter_grayscale_percentage" type="number" min="0" max="100" step="1" default="0" filter="integer"
+			label="PLG_MEDIA-ACTION_DPFILTER_GRAYSCALE_PERCENTAGE_LABEL"/>
+		<field name="dpfilter_hue_rotate_percentage" type="number" min="0" max="360" step="1" default="0" filter="integer"
+			label="PLG_MEDIA-ACTION_DPFILTER_HUE_ROTATE_PERCENTAGE_LABEL"/>
+		<field name="dpfilter_invert_percentage" type="number" min="0" max="100" step="1" default="0" filter="integer"
+			label="PLG_MEDIA-ACTION_DPFILTER_INVERT_PERCENTAGE_LABEL"/>
+		<field name="dpfilter_opacity_percentage" type="number" min="0" max="100" step="1" default="100" filter="integer"
+			label="PLG_MEDIA-ACTION_DPFILTER_OPACITY_PERCENTAGE_LABEL"/>
+		<field name="dpfilter_saturate_percentage" type="number" min="0" max="1000" step="1" default="100" filter="integer"
+			label="PLG_MEDIA-ACTION_DPFILTER_SATURATE_PERCENTAGE_LABEL"/>
+	</fieldset>
+</form>

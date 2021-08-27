@@ -7,9 +7,8 @@
 
 namespace DigitalPeak\Library\DPMedia\Adapter;
 
-defined('_JEXEC') or die;
-
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
+use Joomla\Registry\Registry;
 
 /**
  * Caching support trait for media adapters.
@@ -37,11 +36,27 @@ trait CacheTrait
 	 */
 	abstract protected function fetchFiles(string $path = '/'): array;
 
+	/**
+	 * Fetch the files for the given path.
+	 *
+	 * @param string $path
+	 *
+	 * @return array
+	 */
+	abstract protected function fetchSearch(string $path, string $needle, bool $recursive = false): array;
+
+	/**
+	 * Returns the config for the caching functionality.
+	 *
+	 * @return Registry
+	 */
+	abstract protected function getConfig(): Registry;
+
 	public function getFile(string $path = '/'): \stdClass
 	{
 		$cache = $this->cacheFactory->createCacheController('output', ['defaultgroup' => 'plg_filesystem_dp' . $this->name]);
-		$cache->setCaching($this->params->get('cache', 1) == 1);
-		$cache->setLifeTime($this->params->get('cache_time', 900) / 60);
+		$cache->setCaching($this->getConfig()->get('cache', 1) == 1);
+		$cache->setLifeTime($this->getConfig()->get('cache_time', 900) / 60);
 
 		$cacheId = 'file-' . $path;
 
@@ -60,8 +75,8 @@ trait CacheTrait
 	public function getFiles(string $path = '/'): array
 	{
 		$cache = $this->cacheFactory->createCacheController('output', ['defaultgroup' => 'plg_filesystem_dp' . $this->name]);
-		$cache->setCaching($this->params->get('cache', 1) == 1);
-		$cache->setLifeTime($this->params->get('cache_time', 900) / 60);
+		$cache->setCaching($this->getConfig()->get('cache', 1) == 1);
+		$cache->setLifeTime($this->getConfig()->get('cache_time', 900) / 60);
 
 		$cacheId = 'files-' . $path;
 
@@ -71,6 +86,26 @@ trait CacheTrait
 		}
 
 		$files = $this->fetchFiles($path);
+
+		$cache->store($files, $cacheId);
+
+		return $files;
+	}
+
+	public function search(string $path, string $needle, bool $recursive = false): array
+	{
+		$cache = $this->cacheFactory->createCacheController('output', ['defaultgroup' => 'plg_filesystem_dp' . $this->name]);
+		$cache->setCaching($this->getConfig()->get('cache', 1) == 1);
+		$cache->setLifeTime($this->getConfig()->get('cache_time', 900) / 60);
+
+		$cacheId = 'search-' . $path . '-' . md5($needle);
+
+		if ($cache->contains($cacheId)) {
+			$cache->gc();
+			return $cache->get($cacheId);
+		}
+
+		$files = $this->fetchSearch($path, $needle, $recursive);
 
 		$cache->store($files, $cacheId);
 

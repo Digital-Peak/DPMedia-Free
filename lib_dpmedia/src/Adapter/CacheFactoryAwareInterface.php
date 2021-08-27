@@ -7,8 +7,6 @@
 
 namespace DigitalPeak\Library\DPMedia\Adapter;
 
-defined('_JEXEC') or die;
-
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 
 /**
