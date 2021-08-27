@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4.0" type="plugin" group="filesystem" method="upgrade">
+	<name>plg_filesystem_dppexels</name>
+	<author>Digital Peak</author>
+	<creationDate>27 Aug 2021</creationDate>
+	<copyright>(C) 2021 Digital Peak GmbH</copyright>
+	<license>http://www.gnu.org/licenses/gpl-3.0.html</license>
+	<authorEmail>info@digital-peak.com</authorEmail>
+	<authorUrl>joomla.digital-peak.com</authorUrl>
+	<version>1.0.0</version>
+	<description>PLG_FILESYSTEM_DPPEXELS_XML_DESCRIPTION</description>
+	<namespace path="src">DigitalPeak\Plugin\Filesystem\DPPexels</namespace>
+	<files>
+		<filename plugin="dppexels">dppexels.php</filename>
+		<folder>language</folder>
+		<folder>services</folder>
+		<folder>src</folder>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field type="subform" name="folders" multiple="true"
+					label="PLG_FILESYSTEM_DPPEXELS_FOLDERS_LABEL" description="PLG_FILESYSTEM_DPPEXELS_FOLDERS_DESC">
+					<form>
+						<fields>
+							<field type="text" name="display_name" required="true"
+								label="PLG_FILESYSTEM_DPPEXELS_DISPLAY_NAME_LABEL" description="PLG_FILESYSTEM_DPPEXELS_DISPLAY_NAME_DESC"/>
+							<field type="text" name="search_query" required="true"
+								label="PLG_FILESYSTEM_DPPEXELS_SEARCH_QUERY_LABEL" description="PLG_FILESYSTEM_DPPEXELS_SEARCH_QUERY_DESC"/>
+							<field type="text" name="result_limit" default="300"
+								label="PLG_FILESYSTEM_DPPEXELS_RESULT_LIMIT_LABEL" description="PLG_FILESYSTEM_DPPEXELS_RESULT_LIMIT_DESC"/>
+							<field type="text" name="api_key" required="true"
+								label="PLG_FILESYSTEM_DPPEXELS_API_KEY_LABEL" description="PLG_FILESYSTEM_DPPEXELS_API_KEY_DESC"/>
+							<field type="list" name="cache" default="1"
+								label="PLG_FILESYSTEM_DPPEXELS_CACHING_LABEL" description="PLG_FILESYSTEM_DPPEXELS_CACHING_DESC">
+								<option value="1">JYES</option>
+								<option value="0">JNO</option>
+							</field>
+							<field type="text" name="cache_time" default="900" showon="cache:1"
+								label="PLG_FILESYSTEM_DPPEXELS_CACHING_TIME_LABEL" description="PLG_FILESYSTEM_DPPEXELS_CACHING_TIME_DESC"/>
+							<field name="access_token" type="hidden"/>
+						</fields>
+					</form>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
