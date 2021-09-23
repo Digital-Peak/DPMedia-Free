@@ -10,7 +10,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\Component\Media\Administrator\Plugin\MediaActionPlugin;
 
-class PlgMediaActionDPFilter extends MediaActionPlugin
+class PlgMediaActionDPEmoji extends MediaActionPlugin
 {
 	/** @var CMSApplication */
 	protected $app;
@@ -18,15 +18,10 @@ class PlgMediaActionDPFilter extends MediaActionPlugin
 	protected function loadJs()
 	{
 		HTMLHelper::_('behavior.core');
-
-		$this->app->getDocument()->addScriptOptions('DPFilter.presets', $this->params->get('presets', new \stdClass()));
-
 		parent::loadJs();
 
-		Text::script('PLG_MEDIA-ACTION_DPFILTER_MESSAGE_NO_BROWSER_SUPPORT');
-	}
+		$this->app->getDocument()->addScriptOptions('DPEmoji.presets', $this->params->get('presets', new \stdClass()));
 
-	protected function loadCss()
-	{
+		Text::script('PLG_MEDIA-ACTION_DPEMOJI_MESSAGE_NO_BROWSER_SUPPORT');
 	}
 }

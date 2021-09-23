@@ -46,8 +46,6 @@ class FtpAdapterWritable extends FtpAdapter implements CacheFactoryAwareInterfac
 	{
 		$this->updateFile($name, $path, $data);
 
-		$this->clearCache($path);
-
 		return $name;
 	}
 
@@ -58,6 +56,8 @@ class FtpAdapterWritable extends FtpAdapter implements CacheFactoryAwareInterfac
 		$this->getFtpClient()->putFromString($this->getPath($path) . '/' . $name, $data);
 
 		$this->clearCache($path);
+
+		$this->generateThumb($this->getFile($path . '/' . $name), $this->getConfig());
 	}
 
 	public function delete(string $path)

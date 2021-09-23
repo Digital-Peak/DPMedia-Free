@@ -37,7 +37,7 @@ class PexelsAdapter extends Adapter
 
 	protected function fetchFiles(string $path = '/'): array
 	{
-		if (pathinfo($path, PATHINFO_EXTENSION)) {
+		if (strpos($path, '.') !== false) {
 			return [$this->getFile($path)];
 		}
 

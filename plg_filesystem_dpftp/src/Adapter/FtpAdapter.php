@@ -53,13 +53,15 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 
 	protected function fetchFiles(string $path = '/'): array
 	{
-		if (pathinfo($path, PATHINFO_EXTENSION)) {
-			$path = dirname($path);
+		$path = $this->getPath($path) ?: '/';
+
+		$ftpPath = $path;
+		if (strpos($path, '.') !== false) {
+			$ftpPath = dirname($path);
 		}
 
-		$path = $this->getPath($path) ?: '/';
 		$this->connect();
-		$files = $this->getFtpClient()->mlsd($path);
+		$files = $this->getFtpClient()->mlsd($ftpPath);
 		if ($files === false) {
 			throw new \Exception(error_get_last() ? error_get_last()['message'] : 'Error');
 		}
@@ -70,7 +72,12 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 				continue;
 			}
 
-			$data[] = $this->getFileInfo((object)$entry, $path);
+			// When the path is different, then a file is fetched and the list should only contain the file
+			if ($ftpPath !== $path && $ftpPath. '/' . $entry['name'] !== $path) {
+				continue;
+			}
+
+			$data[] = $this->getFileInfo((object)$entry, $ftpPath);
 		}
 
 		return $data;
@@ -113,7 +120,7 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 	 * Extract file information from an entry of FTP.
 	 *
 	 * @param \stdClass $fileEntry
-	 * @param string $path
+	 * @param string    $path
 	 *
 	 * @return \stdClass
 	 */
@@ -128,7 +135,6 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 		$file->width      = 0;
 		$file->height     = 0;
 		$file->extension  = '';
-		$file->thumb_path = '';
 
 		if ($file->type == 'file') {
 			$file->extension = pathinfo($file->name, PATHINFO_EXTENSION);
@@ -143,16 +149,7 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 		$file->modified_date_formatted = HTMLHelper::_('date', $updateDate, $this->app->getLanguage()->_('DATE_FORMAT_LC5'));
 		$file->modified_date           = $updateDate->format('c');
 
-		if (in_array($file->extension, $this->supportedThumbnailImageFormats)) {
-			$file->thumb_path = rtrim(Uri::root(), '/') .  $this->download(
-				$file,
-				new Registry([
-					'local_media_path'   => $this->getConfig()->get('local_image_thumb_path', '/images/dpftp/thumbs'),
-					'local_image_width'  => 120,
-					'local_image_height' => 120
-				])
-			);
-		}
+		$file->thumb_path = $this->generateThumb($file, $this->getConfig());
 
 		return $file;
 	}

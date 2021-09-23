@@ -1,0 +1,32 @@
+/**
+ * @package   DPMedia
+ * @copyright Copyright (C) 2021 Digital Peak GmbH. <https://www.digital-peak.com>
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
+ */
+.plg-media-action-dpemoji-icons .dp-icon {
+	display: inline-block;
+	cursor: pointer;
+	font-size: 1.5rem;
+}
+
+.plg-media-action-dpemoji-panel {
+	position: sticky;
+	top: 10rem;
+	max-width: 100%;
+}
+
+.plg-media-action-dpemoji-panel__maincanvas {
+	max-width: 100%;
+}
+
+.plg-media-action-dpemoji-panel .dp-emoji-canvas {
+	position: absolute;
+}
+
+#media-manager-edit-container {
+	align-items: start;
+	max-width: 100%;
+	padding-top: 1rem;
+}
+
+/*# sourceMappingURL=dpemoji.css.map */

@@ -10,6 +10,7 @@ namespace DigitalPeak\Library\DPMedia\Adapter;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Filesystem\Path;
 use Joomla\CMS\Image\Image;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
 
 /**
@@ -17,6 +18,11 @@ use Joomla\Registry\Registry;
  */
 trait DownloadMediaTrait
 {
+	/**
+	 * The supported formats to generate thumbnails from.
+	 */
+	private $supportedThumbnailImageFormats = ['jpg', 'jpeg', 'png', 'tiff', 'tif', 'gif', 'bmp'];
+
 	/**
 	 * Returns the content of the file with the given config.
 	 *
@@ -89,6 +95,47 @@ trait DownloadMediaTrait
 		touch(JPATH_SITE . $filePath, strtotime($file->modified_date));
 
 		return $filePath;
+	}
+
+	/**
+	 * Generates a thumbnail in the thumbnail path from the config. Fallback is default file in media.
+	 *
+	 * @param \stdClass $file
+	 * @param Registry  $config
+	 *
+	 * @return string
+	 */
+	protected function generateThumb(\stdclass $file, Registry $config): string
+	{
+		if (!in_array($file->extension, $this->supportedThumbnailImageFormats)) {
+			return '';
+		}
+
+		$thumbConfig = new Registry([
+			'local_media_path'   => $config->get('local_image_thumb_path', '/images/dp' . $this->getName() . '/thumbs'),
+			'local_image_width'  => 120,
+			'local_image_height' => 120
+		]);
+
+		$thumb = null;
+
+		$filePath = $this->getMediaPath($file, $thumbConfig);
+		if (file_exists(JPATH_SITE . $filePath) && filemtime(JPATH_SITE . $filePath) >= strtotime($file->modified_date)) {
+			$thumb = rtrim(Uri::root(), '/')  . $filePath;
+		}
+
+		// To not bloat, only a certain amount of thumbnails are generated
+		static $thumbCount = 0;
+		if (!$thumb && $thumbCount < $config->get('thumb_count', 10)) {
+			$thumb = rtrim(Uri::root(), '/') .  $this->download($file, $thumbConfig);
+			$thumbCount++;
+		}
+
+		if (!$thumb) {
+			$thumb = rtrim(Uri::root(), '/')  . '/media/lib_dpmedia/images/default.jpg';
+		}
+
+		return $thumb;
 	}
 
 	/**

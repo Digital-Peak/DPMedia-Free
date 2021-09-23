@@ -26,8 +26,7 @@ abstract class Adapter implements AdapterInterface
 	protected $db;
 	protected $app;
 	protected $name;
-	protected $supportedThumbnailImageFormats = ['jpg', 'jpeg', 'png', 'tiff', 'tif', 'gif', 'bmp'];
-	protected $useLastPathSegment             = true;
+	protected $useLastPathSegment = true;
 	private $config;
 
 	public function __construct(Registry $config, ThinHTTP $http, MimeTypeMapping $mimeTypeMapping, DatabaseInterface $db, CMSApplication $app)
