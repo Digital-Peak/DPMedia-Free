@@ -16,22 +16,4 @@
 	padding-top: 1rem;
 }
 
-.plg-media-action-dpemoji-icons .dp-icon {
-	display: inline-block;
-	cursor: pointer;
-	font-size: 1.5rem;
-}
-
-.plg-media-action-dpemoji-panel {
-	max-width: 100%;
-}
-
-.plg-media-action-dpemoji-panel__maincanvas {
-	max-width: 100%;
-}
-
-.plg-media-action-dpemoji-panel .dp-emoji-canvas {
-	position: absolute;
-}
-
-/*# sourceMappingURL=dpemoji.css.map */
+/*# sourceMappingURL=dpfilter.css.map */

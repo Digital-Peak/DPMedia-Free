@@ -25,8 +25,4 @@ class PlgMediaActionDPFilter extends MediaActionPlugin
 
 		Text::script('PLG_MEDIA-ACTION_DPFILTER_MESSAGE_NO_BROWSER_SUPPORT');
 	}
-
-	protected function loadCss()
-	{
-	}
 }

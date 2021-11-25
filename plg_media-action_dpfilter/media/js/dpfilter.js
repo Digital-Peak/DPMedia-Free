@@ -20,10 +20,16 @@
 	}
 	function save(image, quality) {
 		const canvas = document.createElement('canvas');
+		canvas.style.position = 'absolute';
 		getRoot(image).appendChild(canvas);
 		canvas.width = image.naturalWidth;
 		canvas.height = image.naturalHeight;
-		layers.forEach((layer) => canvas.getContext('2d').drawImage(layer, 0, 0, layer.width, layer.height));
+		layers.forEach((layer) => {
+			const ratio = (1 / layers[0].offsetWidth) * layers[0].width;
+			const x = layer.offsetLeft * ratio;
+			const y = layer.offsetTop * ratio;
+			canvas.getContext('2d').drawImage(layer, x, y, layer.width, layer.height);
+		});
 		const format = Joomla.MediaManager.Edit.original.extension === 'jpg' ? 'jpeg' : Joomla.MediaManager.Edit.original.extension;
 		Joomla.MediaManager.Edit.current.contents = canvas.toDataURL('image/' + format, quality / 100);
 		window.dispatchEvent(new Event('mediaManager.history.point'));
@@ -151,6 +157,8 @@
 	function printImageInfo(image, name) {
 		document.querySelector('#fieldset-dp' + name + ' legend').innerHTML = image.naturalWidth + 'px - ' + image.naturalHeight + 'px';
 	}
+	const loader = { inject, loadPresets, printImageInfo };
+	const canvas = { load, createLayer, save, destroy, getActiveLayer, isSupported };
 	const applyFilter = (layer, image) => {
 		let filter = 'sepia(' + document.getElementById('jform_dpfilter_sepia_percentage').value + '%) ';
 		filter += 'blur(' + document.getElementById('jform_dpfilter_blur_length').value + ') ';
@@ -166,22 +174,22 @@
 		ctx.filter = filter;
 		ctx.drawImage(image, 0, 0, layer.width, layer.height);
 	};
-	inject(
+	loader.inject(
 		'filter',
 		(image) => {
-			if (!isSupported()) {
+			if (!canvas.isSupported()) {
 				return false;
 			}
-			load(image, 'filter_quality');
-			loadPresets('filter');
+			canvas.load(image, 'filter_quality');
+			loader.loadPresets('filter');
 			Array.from(document.querySelectorAll('#fieldset-dpfilter input, #fieldset-dpfilter select')).forEach(
 				(input) => input.addEventListener('change', () => {
-					applyFilter(getActiveLayer() ? getActiveLayer() : createLayer(image), image);
-					save(image, document.getElementById('jform_dpfilter_quality').value);
+					applyFilter(canvas.getActiveLayer() ? canvas.getActiveLayer() : canvas.createLayer(image), image);
+					canvas.save(image, document.getElementById('jform_dpfilter_quality').value);
 				})
 			);
 		},
-		(image) => printImageInfo(image, 'filter'),
-		() => destroy()
+		(image) => loader.printImageInfo(image, 'filter'),
+		() => canvas.destroy()
 	);
-}());
+})();
