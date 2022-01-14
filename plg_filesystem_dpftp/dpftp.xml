@@ -40,6 +40,11 @@
 								<option value="1">JYES</option>
 								<option value="0">JNO</option>
 							</field>
+							<field name="pasv" type="list" default="0"
+								   label="PLG_FILESYSTEM_DPFTP_PASV_LABEL" description="PLG_FILESYSTEM_DPFTP_PASV_DESC">
+								<option value="1">JYES</option>
+								<option value="0">JNO</option>
+							</field>
 							<field name="local_media_path" type="text" default="/images/dpftp/media"
 								label="PLG_FILESYSTEM_DPFTP_LOCAL_MEDIA_PATH_LABEL" description="PLG_FILESYSTEM_DPFTP_LOCAL_MEDIA_PATH_DESC"/>
 							<field name="local_image_width" type="text" default="0"
