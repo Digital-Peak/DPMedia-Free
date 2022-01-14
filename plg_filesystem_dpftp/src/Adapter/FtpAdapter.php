@@ -114,10 +114,7 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 
 		$this->getFtpClient()->connect($this->getConfig()->get('host'), $this->getConfig()->get('ssl', 1), $this->getConfig()->get('port', 21));
 		$this->getFtpClient()->login($this->getConfig()->get('username'), $this->getConfig()->get('password'));
-
-        if ( (int) $this->getConfig()->get('pasv', 0) === 1) {
-            $this->getFtpClient()->pasv(true);
-        }
+		$this->getFtpClient()->pasv((int) $this->getConfig()->get('pasv', 0) === 1);
 	}
 
 	/**
