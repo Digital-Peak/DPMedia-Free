@@ -127,15 +127,16 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 	 */
 	private function getFileInfo(\stdClass $fileEntry, string $path): \stdClass
 	{
-		$file             = new \stdClass();
-		$file->type       = $fileEntry->type == 'file' ? 'file' : 'dir';
-		$file->name       = $fileEntry->name;
-		$file->path       = rtrim($path, '/') . '/' . $fileEntry->name;
-		$file->path       = substr_replace($file->path, '', 0, strlen(rtrim($this->getConfig()->get('root_folder', '/'), '/')));
-		$file->size       = !empty($fileEntry->size) ? $fileEntry->size : (!empty($fileEntry->sizd) ? $fileEntry->sizd : 0);
-		$file->width      = 0;
-		$file->height     = 0;
-		$file->extension  = '';
+		$file            = new \stdClass();
+		$file->type      = $fileEntry->type == 'file' ? 'file' : 'dir';
+		$file->name      = $fileEntry->name;
+		$file->path      = rtrim($path, '/') . '/' . $fileEntry->name;
+		$file->path      = substr_replace($file->path, '', 0, strlen(rtrim($this->getConfig()->get('root_folder', '/'), '/')));
+		$file->size      = !empty($fileEntry->size) ? (int)$fileEntry->size : (!empty($fileEntry->sizd) ? (int)$fileEntry->sizd : 0);
+		$file->width     = 0;
+		$file->height    = 0;
+		$file->extension = '';
+		$file->mime_type = '';
 
 		if ($file->type == 'file') {
 			$file->extension = pathinfo($file->name, PATHINFO_EXTENSION);

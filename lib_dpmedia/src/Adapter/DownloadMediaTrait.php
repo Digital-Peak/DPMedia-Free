@@ -9,15 +9,17 @@ namespace DigitalPeak\Library\DPMedia\Adapter;
 
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Filesystem\Path;
-use Joomla\CMS\Image\Image;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
+use stdClass;
 
 /**
  * Media download support for media adapters.
  */
 trait DownloadMediaTrait
 {
+	use ResizeMediaTrait;
+
 	/**
 	 * The supported formats to generate thumbnails from.
 	 */
@@ -26,7 +28,7 @@ trait DownloadMediaTrait
 	/**
 	 * Returns the content of the file with the given config.
 	 *
-	 * @param \stdClass $file
+	 * @param stdClass $file
 	 * @param Registry  $config
 	 *
 	 * @return string
@@ -43,14 +45,14 @@ trait DownloadMediaTrait
 	/**
 	 * Downloads the given file to the local filesystem. The path relative to root is returned.
 	 *
-	 * @param \stdClass $file
+	 * @param stdClass $file
 	 * @param Registry  $config
 	 *
 	 * @return string
 	 *
 	 * @see DownloadMediaTrait::getMediaPath()
 	 */
-	protected function download(\stdClass $file, Registry $config): string
+	protected function download(stdClass $file, Registry $config): string
 	{
 		$filePath = $this->getMediaPath($file, $config);
 
@@ -64,34 +66,7 @@ trait DownloadMediaTrait
 		}
 
 		file_put_contents(JPATH_SITE . $filePath, $this->getContent($file, $config));
-		touch(JPATH_SITE . $filePath, strtotime($file->modified_date));
-
-		// If it is not an image or no special sizes are defined, write the image
-		if (!in_array($file->extension, ['jpg', 'jpeg', 'png', 'gif'])
-			|| (!$config->get('local_image_width') && !$config->get('local_image_height'))) {
-			return $filePath;
-		}
-
-		$imgObject = new Image(JPATH_SITE . $filePath);
-
-		// If image is smaller, then do no resize
-		if ($imgObject->getWidth() < $config->get('local_image_width', 0)
-			&& $imgObject->getHeight() < $config->get('local_image_height', 0)) {
-			return $filePath;
-		}
-
-		$imgObject->resize($config->get('local_image_width', 0), $config->get('local_image_height', 0), false, Image::SCALE_INSIDE);
-
-		$type = IMAGETYPE_JPEG;
-		switch ($file->extension) {
-			case 'gif':
-				$type = IMAGETYPE_GIF;
-				break;
-			case 'png':
-				$type = IMAGETYPE_PNG;
-		}
-
-		$imgObject->toFile(JPATH_SITE . $filePath, $type);
+		$this->resizeImage(JPATH_SITE . $filePath, $config->get('local_image_width', 0), $config->get('local_image_height', 0));
 		touch(JPATH_SITE . $filePath, strtotime($file->modified_date));
 
 		return $filePath;
@@ -100,12 +75,12 @@ trait DownloadMediaTrait
 	/**
 	 * Generates a thumbnail in the thumbnail path from the config. Fallback is default file in media.
 	 *
-	 * @param \stdClass $file
+	 * @param stdClass $file
 	 * @param Registry  $config
 	 *
 	 * @return string
 	 */
-	protected function generateThumb(\stdclass $file, Registry $config): string
+	protected function generateThumb(stdclass $file, Registry $config): string
 	{
 		if (!in_array($file->extension, $this->supportedThumbnailImageFormats)) {
 			return '';
@@ -139,10 +114,39 @@ trait DownloadMediaTrait
 	}
 
 	/**
+	 * Deletes a thumbnail in the thumbnail path from the config when it exists.
+	 *
+	 * @param string   $path
+	 * @param Registry $config
+	 */
+	protected function deleteThumb(string $path, Registry $config)
+	{
+		$file            = new stdClass();
+		$file->extension = pathinfo($path, PATHINFO_EXTENSION);
+		$file->name      = basename($path);
+		$file->path      = dirname($path);
+
+		if (!in_array($file->extension, $this->supportedThumbnailImageFormats)) {
+			return '';
+		}
+
+		$thumbConfig = new Registry([
+			'local_media_path' => $config->get('local_image_thumb_path', '/images/dp' . $this->getName() . '/thumbs')
+		]);
+
+		$filePath = $this->getMediaPath($file, $thumbConfig);
+		if (!file_exists(JPATH_SITE . $filePath)) {
+			return;
+		}
+
+		unlink(JPATH_SITE . $filePath);
+	}
+
+	/**
 	 * Returns the path to the media file relative to the root. The root of the file is taken from the config
 	 * parameter local_media_path.
 	 *
-	 * @param \stdClass $file
+	 * @param stdClass $file
 	 * @param Registry  $config
 	 *
 	 * @return string

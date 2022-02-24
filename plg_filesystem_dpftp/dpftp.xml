@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="4.0" type="plugin" group="filesystem" method="upgrade">
+<extension type="plugin" group="filesystem" method="upgrade">
 	<name>plg_filesystem_dpftp</name>
 	<author>Digital Peak</author>
-	<creationDate>25 Nov 2021</creationDate>
+	<creationDate>24 Feb 2022</creationDate>
 	<copyright>(C) 2021 Digital Peak GmbH</copyright>
 	<license>http://www.gnu.org/licenses/gpl-3.0.html</license>
 	<authorEmail>info@digital-peak.com</authorEmail>
 	<authorUrl>joomla.digital-peak.com</authorUrl>
-	<version>1.3.0</version>
+	<version>1.4.0</version>
 	<description>PLG_FILESYSTEM_DPFTP_XML_DESCRIPTION</description>
 	<namespace path="src">DigitalPeak\Plugin\Filesystem\DPFtp</namespace>
 	<files>
@@ -23,13 +23,13 @@
 					label="PLG_FILESYSTEM_DPFTP_FOLDERS_LABEL" description="PLG_FILESYSTEM_DPFTP_FOLDERS_DESC">
 					<form>
 						<fields>
-							<field name="display_name" type="text" required="true"
+							<field name="display_name" type="text" required="true" pattern="[^,;:]+"
 								label="PLG_FILESYSTEM_DPFTP_DISPLAY_NAME_LABEL" description="PLG_FILESYSTEM_DPFTP_DISPLAY_NAME_DESC"/>
 							<field name="root_folder" type="text" default="/" required="true"
 								label="PLG_FILESYSTEM_DPFTP_ROOT_FOLDER_LABEL" description="PLG_FILESYSTEM_DPFTP_ROOT_FOLDER_DESC"/>
 							<field name="username" type="text" required="true"
 								label="PLG_FILESYSTEM_DPFTP_USERNAME_LABEL" description="PLG_FILESYSTEM_DPFTP_USERNAME_DESC"/>
-							<field name="password" type="password"
+							<field name="password" type="password" maxlength="9999999999"
 								label="PLG_FILESYSTEM_DPFTP_PASSWORD_LABEL" description="PLG_FILESYSTEM_DPFTP_PASSWORD_DESC"/>
 							<field name="host" type="text" required="true"
 								label="PLG_FILESYSTEM_DPFTP_HOST_LABEL" description="PLG_FILESYSTEM_DPFTP_HOST_DESC"/>
@@ -41,10 +41,21 @@
 								<option value="0">JNO</option>
 							</field>
 							<field name="pasv" type="list" default="0"
-								   label="PLG_FILESYSTEM_DPFTP_PASV_LABEL" description="PLG_FILESYSTEM_DPFTP_PASV_DESC">
-								<option value="1">JYES</option>
+								label="PLG_FILESYSTEM_DPFTP_PASV_LABEL" description="PLG_FILESYSTEM_DPFTP_PASV_DESC">
 								<option value="0">JNO</option>
+								<option value="1">JYES</option>
 							</field>
+							<field name="force_resize" type="list" default="0"
+								label="PLG_FILESYSTEM_DPFTP_FORCE_RESIZE_LABEL" description="PLG_FILESYSTEM_DPFTP_FORCE_RESIZE_DESC">
+								<option value="0">JNO</option>
+								<option value="1">PLG_FILESYSTEM_DPFTP_FORCE_RESIZE_UPLOAD</option>
+							</field>
+							<field name="force_width" type="text" pattern="\d*" addonAfter="px" showon="force_resize:1,2,3"
+								label="PLG_FILESYSTEM_DPFTP_FORCE_WIDTH_LABEL" description="PLG_FILESYSTEM_DPFTP_FORCE_WIDTH_DESC"/>
+							<field name="force_height" type="text" pattern="\d*" addonAfter="px" showon="force_resize:1,2,3"
+								label="PLG_FILESYSTEM_DPFTP_FORCE_HEIGHT_LABEL" description="PLG_FILESYSTEM_DPFTP_FORCE_HEIGHT_DESC"/>
+							<field name="force_quality" type="text" default="80" pattern="\d*" addonAfter="%" showon="force_resize:1,2,3"
+								label="PLG_FILESYSTEM_DPFTP_FORCE_QUALITY_LABEL" description="PLG_FILESYSTEM_DPFTP_FORCE_QUALITY_DESC"/>
 							<field name="local_media_path" type="text" default="/images/dpftp/media"
 								label="PLG_FILESYSTEM_DPFTP_LOCAL_MEDIA_PATH_LABEL" description="PLG_FILESYSTEM_DPFTP_LOCAL_MEDIA_PATH_DESC"/>
 							<field name="local_image_width" type="text" default="0"

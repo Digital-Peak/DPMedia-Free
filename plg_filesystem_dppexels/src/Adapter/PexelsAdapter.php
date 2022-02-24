@@ -19,7 +19,7 @@ class PexelsAdapter extends Adapter
 	protected function fetchFile(string $path = '/'): \stdClass
 	{
 		try {
-			$response = $this->callAPI('/photos/' . $this->getId($path));
+			$response = $this->callAPI('/photos/' . $this->getPathId($path));
 
 			if ($response->dp->body == 'Not Found') {
 				throw new FileNotFoundException($response->dp->body);
@@ -75,7 +75,7 @@ class PexelsAdapter extends Adapter
 
 	protected function fetchSearch(string $path, string $needle, bool $recursive = false): array
 	{
-		$params   = ['query' => $needle, 'collections' => $this->getId($path)];
+		$params   = ['query' => $needle, 'collections' => $this->getPathId($path)];
 		$pageSize = 30;
 		$limit    = $this->getConfig()->get('result_limit', 300);
 

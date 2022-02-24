@@ -1,0 +1,24 @@
+.plg-dppermissions-modal {
+	z-index: 2000 !important;
+}
+.plg-dppermissions-modal select {
+	width: 100%;
+	height: 100%;
+	min-height: 400px;
+}
+.plg-dppermissions-modal .tingle-modal-box__content {
+	padding: 1rem;
+}
+.plg-dppermissions-modal .dp-modal__info-box_hidden {
+	display: none;
+}
+
+.plg-permissions-set {
+	position: absolute;
+	top: 0.2rem;
+	left: 0.2rem;
+	color: #d63b3b;
+	width: 2rem;
+}
+
+/*# sourceMappingURL=dppermissions.css.map */

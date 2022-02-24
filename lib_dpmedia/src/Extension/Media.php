@@ -9,7 +9,9 @@ namespace DigitalPeak\Library\DPMedia\Extension;
 
 use DigitalPeak\Library\DPMedia\Adapter\CacheFactoryAwareInterface;
 use DigitalPeak\Library\DPMedia\Adapter\MimeTypeMapping;
+use DigitalPeak\Library\DPMedia\Adapter\ResizeEventMediaTrait;
 use DigitalPeak\ThinHTTP;
+use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
@@ -21,17 +23,22 @@ use Joomla\Registry\Registry;
 
 class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface
 {
+	use ResizeEventMediaTrait;
+
 	public static function getSubscribedEvents(): array
 	{
 		return [
 			'onSetupProviders'          => 'setupProviders',
-			'onFileSystemOAuthCallback' => 'storeRefreshToken'
+			'onFileSystemOAuthCallback' => 'storeRefreshToken',
+			'onContentBeforeSave'       => 'beforeSave'
 		];
 	}
 
-	protected $autoloadLanguage = true;
+	/** @var CMSApplication */
 	protected $app;
 	protected $db;
+	protected $autoloadLanguage = true;
+
 	protected $http;
 	protected $mimeTypeMapping;
 	protected $cacheFactory;
@@ -141,6 +148,10 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface
 		$folders = $this->params->get('folders');
 		if (!$folders) {
 			return [];
+		}
+
+		if (is_string($folders)) {
+			$folders = json_decode($folders);
 		}
 
 		$data = [];

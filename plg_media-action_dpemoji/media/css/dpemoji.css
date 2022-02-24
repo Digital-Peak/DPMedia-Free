@@ -21,15 +21,12 @@
 	cursor: pointer;
 	font-size: 1.5rem;
 }
-
 .plg-media-action-dpemoji-panel {
 	max-width: 100%;
 }
-
 .plg-media-action-dpemoji-panel__maincanvas {
 	max-width: 100%;
 }
-
 .plg-media-action-dpemoji-panel .dp-emoji-canvas {
 	position: absolute;
 }

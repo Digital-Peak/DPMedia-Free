@@ -7,14 +7,18 @@
 
 namespace DigitalPeak\Library\DPMedia\Adapter;
 
+use DateTimeZone;
 use DigitalPeak\ThinHTTP;
+use Exception;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\Path;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Component\Media\Administrator\Adapter\AdapterInterface;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Registry\Registry;
+use ReflectionClass;
 
 /**
  * Read only adapter for Joomla 4 media manager.
@@ -37,7 +41,7 @@ abstract class Adapter implements AdapterInterface
 		$this->db              = $db;
 		$this->app             = $app;
 
-		$this->name = strtolower((new \ReflectionClass($this))->getShortName());
+		$this->name = strtolower((new ReflectionClass($this))->getShortName());
 		$this->name = str_replace('adapter', '', $this->name);
 		$this->name = str_replace('writable', '', $this->name);
 	}
@@ -107,37 +111,37 @@ abstract class Adapter implements AdapterInterface
 
 	public function getResource(string $path)
 	{
-		throw new \Exception('Not implemented, please get the pro version.');
+		throw new Exception('Not implemented, please get the pro version.');
 	}
 
 	public function createFolder(string $name, string $path): string
 	{
-		throw new \Exception('Not implemented, please get the pro version.');
+		throw new Exception('Not implemented, please get the pro version.');
 	}
 
 	public function createFile(string $name, string $path, $data): string
 	{
-		throw new \Exception('Not implemented, please get the pro version.');
+		throw new Exception('Not implemented, please get the pro version.');
 	}
 
 	public function updateFile(string $name, string $path, $data)
 	{
-		throw new \Exception('Not implemented, please get the pro version.');
+		throw new Exception('Not implemented, please get the pro version.');
 	}
 
 	public function delete(string $path)
 	{
-		throw new \Exception('Not implemented, please get the pro version.');
+		throw new Exception('Not implemented, please get the pro version.');
 	}
 
 	public function move(string $sourcePath, string $destinationPath, bool $force = false): string
 	{
-		throw new \Exception('Not implemented, please get the pro version.');
+		throw new Exception('Not implemented, please get the pro version.');
 	}
 
 	public function copy(string $sourcePath, string $destinationPath, bool $force = false): string
 	{
-		throw new \Exception('Not implemented, please get the pro version.');
+		throw new Exception('Not implemented, please get the pro version.');
 	}
 
 	public function getAdapterName(): string
@@ -152,7 +156,7 @@ abstract class Adapter implements AdapterInterface
 	 *
 	 * @return string
 	 */
-	protected function getId(string $path): string
+	protected function getPathId(string $path): string
 	{
 		$id = basename($path);
 		if (strpos($id, '.')) {
@@ -208,7 +212,7 @@ abstract class Adapter implements AdapterInterface
 		}
 
 		if ($timezone) {
-			$dateObj->setTimezone(new \DateTimeZone($timezone));
+			$dateObj->setTimezone(new DateTimeZone($timezone));
 		}
 
 		return $dateObj;
@@ -219,7 +223,7 @@ abstract class Adapter implements AdapterInterface
 	 *
 	 * @return Registry
 	 */
-	protected function getConfig(): Registry
+	public function getConfig(): Registry
 	{
 		return $this->config;
 	}
@@ -241,7 +245,7 @@ abstract class Adapter implements AdapterInterface
 	 */
 	protected function updateParams($compareKey = 'refresh_token')
 	{
-		$plugin = \Joomla\CMS\Plugin\PluginHelper::getPlugin('filesystem', 'dp' . $this->name);
+		$plugin = PluginHelper::getPlugin('filesystem', 'dp' . $this->name);
 		if (!$plugin) {
 			return null;
 		}

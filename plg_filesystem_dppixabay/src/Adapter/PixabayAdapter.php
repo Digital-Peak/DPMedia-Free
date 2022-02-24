@@ -19,7 +19,7 @@ class PixabayAdapter extends Adapter
 	protected function fetchFile(string $path = '/'): \stdClass
 	{
 		try {
-			$response = $this->callAPI(['id' => $this->getId($path)]);
+			$response = $this->callAPI(['id' => $this->getPathId($path)]);
 
 			if ($response->dp->body == 'Not Found' || empty($response->hits)) {
 				throw new FileNotFoundException($response->dp->body);
@@ -126,7 +126,7 @@ class PixabayAdapter extends Adapter
 		$response      = $this->http->get('https://pixabay.com/api/' . ($params ? '?' . http_build_query($params) : ''));
 
 		if ($response->dp->info->http_code >= 400) {
-			throw new \Exception($response->code, $response->dp->info->http_code);
+			throw new \Exception(!empty($response->detail) ? $response->detail : $response->code, $response->dp->info->http_code);
 		}
 
 		return $response;
@@ -163,7 +163,7 @@ class PixabayAdapter extends Adapter
 		$file->modified_date           = $updateDate->format('c');
 
 		if (!empty($fileEntry->imageSize)) {
-			$file->size = $fileEntry->imageSize;
+			$file->size = (int)$fileEntry->imageSize;
 		}
 
 		if (!empty($fileEntry->imageWidth)) {
