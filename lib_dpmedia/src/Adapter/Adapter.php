@@ -198,7 +198,7 @@ abstract class Adapter implements AdapterInterface
 	 */
 	protected function getDate(string $date = null): Date
 	{
-		$dateObj = Factory::getDate($date);
+		$dateObj = Factory::getDate($date ?: '');
 
 		$timezone = $this->app->get('offset');
 		$user     = $this->app->getIdentity();
