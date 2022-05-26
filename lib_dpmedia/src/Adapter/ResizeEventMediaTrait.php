@@ -7,7 +7,6 @@
 
 namespace DigitalPeak\Library\DPMedia\Adapter;
 
-use Joomla\CMS\Image\Image;
 use Joomla\Event\Event;
 
 /**

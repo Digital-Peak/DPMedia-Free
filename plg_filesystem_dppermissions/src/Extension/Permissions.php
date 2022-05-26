@@ -58,7 +58,7 @@ class Permissions extends CMSPlugin implements SubscriberInterface
 
 		$this->app->getDocument()->addScriptOptions('DPPermissions.groups', UsersHelper::getGroups());
 
-		Text::script('PLG_FILESYSTEM_DPPERMISSIONS_TEXT_CLOSE');
+		Text::script('LIB_DPMEDIA_TEXT_CLOSE');
 		Text::script('PLG_FILESYSTEM_DPPERMISSIONS_TEXT_PERMISSIONS');
 		Text::script('PLG_FILESYSTEM_DPPERMISSIONS_TEXT_PERMISSIONS_DESC');
 	}
@@ -209,6 +209,7 @@ class Permissions extends CMSPlugin implements SubscriberInterface
 		if (!$path) {
 			return;
 		}
+
 		$path = Path::clean($path, '/');
 
 		$query = $this->db->getQuery(true);
