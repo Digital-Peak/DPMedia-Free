@@ -8,7 +8,7 @@
 namespace DigitalPeak\Library\DPMedia\Adapter;
 
 use DateTimeZone;
-use DigitalPeak\ThinHTTP;
+use DigitalPeak\ThinHTTPInterface;
 use Exception;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Date\Date;
@@ -33,8 +33,13 @@ abstract class Adapter implements AdapterInterface
 	protected $useLastPathSegment = true;
 	private $config;
 
-	public function __construct(Registry $config, ThinHTTP $http, MimeTypeMapping $mimeTypeMapping, DatabaseInterface $db, CMSApplication $app)
-	{
+	public function __construct(
+		Registry $config,
+		ThinHTTPInterface $http,
+		MimeTypeMapping $mimeTypeMapping,
+		DatabaseInterface $db,
+		CMSApplication $app
+	) {
 		$this->config          = $config;
 		$this->http            = $http;
 		$this->mimeTypeMapping = $mimeTypeMapping;

@@ -12,7 +12,7 @@ use DigitalPeak\Library\DPMedia\Adapter\DownloadMediaTrait;
 use DigitalPeak\Library\DPMedia\Adapter\MimeTypeMapping;
 use DigitalPeak\Plugin\Filesystem\DPFtp\FtpClientAwareInterface;
 use DigitalPeak\Plugin\Filesystem\DPFtp\FtpClientAwareTrait;
-use DigitalPeak\ThinHTTP;
+use DigitalPeak\ThinHTTPInterface;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Filesystem\Path;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -31,8 +31,13 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 
 	protected $useLastPathSegment = false;
 
-	public function __construct(Registry $config, ThinHTTP $http, MimeTypeMapping $mimeTypeMapping, DatabaseInterface $db, CMSApplication $app)
-	{
+	public function __construct(
+		Registry $config,
+		ThinHTTPInterface $http,
+		MimeTypeMapping $mimeTypeMapping,
+		DatabaseInterface $db,
+		CMSApplication $app
+	) {
 		$config->set('local_media', 1);
 		parent::__construct($config, $http, $mimeTypeMapping, $db, $app);
 	}
@@ -62,13 +67,24 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 
 		$this->connect();
 		$files = $this->getFtpClient()->mlsd($ftpPath);
+
+		// When the server doesn't support mlsd, then we need to do a fallback on normal list
+		if ($files === false) {
+			$files = $this->getFtpClient()->nlist($ftpPath);
+		}
+
 		if ($files === false) {
 			throw new \Exception(error_get_last() ? error_get_last()['message'] : 'Error');
 		}
 
 		$data = [];
 		foreach ($files as $entry) {
-			if ($entry['name'] == '.' || $entry['name'] == '..') {
+			// When nlist fetch
+			if (is_string($entry)) {
+				$entry = basename($entry);
+				$entry = ['name' => $entry, 'type' => strpos($entry, '.') ? 'file' : 'dir'];
+			}
+			if ($entry['name'] === '.' || $entry['name'] === '..') {
 				continue;
 			}
 
@@ -128,7 +144,7 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 	private function getFileInfo(\stdClass $fileEntry, string $path): \stdClass
 	{
 		$file            = new \stdClass();
-		$file->type      = $fileEntry->type == 'file' ? 'file' : 'dir';
+		$file->type      = $fileEntry->type === 'file' ? 'file' : 'dir';
 		$file->name      = $fileEntry->name;
 		$file->path      = rtrim($path, '/') . '/' . $fileEntry->name;
 		$file->path      = substr_replace($file->path, '', 0, strlen(rtrim($this->getConfig()->get('root_folder', '/'), '/')));
@@ -138,7 +154,7 @@ class FtpAdapter extends Adapter implements FtpClientAwareInterface
 		$file->extension = '';
 		$file->mime_type = '';
 
-		if ($file->type == 'file') {
+		if ($file->type === 'file') {
 			$file->extension = pathinfo($file->name, PATHINFO_EXTENSION);
 			$file->mime_type = $this->mimeTypeMapping->getMimetype($file->extension);
 		}

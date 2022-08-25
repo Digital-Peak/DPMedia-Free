@@ -2,12 +2,12 @@
 <extension type="plugin" group="media-action" method="upgrade">
 	<name>plg_media-action_dpfilter</name>
 	<author>Digital Peak</author>
-	<creationDate>26 May 2022</creationDate>
+	<creationDate>25 Aug 2022</creationDate>
 	<copyright>(C) 2021 Digital Peak GmbH</copyright>
 	<license>http://www.gnu.org/licenses/gpl-3.0.html</license>
 	<authorEmail>info@digital-peak.com</authorEmail>
 	<authorUrl>joomla.digital-peak.com</authorUrl>
-	<version>1.5.0</version>
+	<version>1.5.1</version>
 	<description>PLG_MEDIA-ACTION_DPFILTER_XML_DESCRIPTION</description>
 	<namespace path="src">DigitalPeak\Plugin\MediaAction\DPFilter</namespace>
 	<files>
