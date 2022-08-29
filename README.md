@@ -2,7 +2,7 @@
 This is the source of DPMedia. Here you will find the plugins of DPMedia in its free version.
 
 ## PREREQUISITS
-- Joomla 4 and above
+- Joomla 4.1 and above
 - MySQL >= 5.5.0
 - PHP >= 7.4.0
 - Browsers: Firefox, Edge, Chrome, Opera but not Internet Explorer
