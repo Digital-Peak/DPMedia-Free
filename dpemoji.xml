@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="media-action" method="upgrade">
+	<name>plg_media-action_dpemoji</name>
+	<author>Digital Peak</author>
+	<creationDate>22 Sep 2022</creationDate>
+	<copyright>(C) 2021 Digital Peak GmbH</copyright>
+	<license>http://www.gnu.org/licenses/gpl-3.0.html</license>
+	<authorEmail>info@digital-peak.com</authorEmail>
+	<authorUrl>joomla.digital-peak.com</authorUrl>
+	<version>1.5.2</version>
+	<description>PLG_MEDIA-ACTION_DPEMOJI_XML_DESCRIPTION</description>
+	<namespace path="src">DigitalPeak\Plugin\MediaAction\DPEmoji</namespace>
+	<files>
+		<filename plugin="dpemoji">dpemoji.php</filename>
+		<folder>form</folder>
+		<folder>language</folder>
+		<folder>layouts</folder>
+		<folder>src</folder>
+	</files>
+	<media destination="plg_media-action_dpemoji" folder="media">
+		<folder>css</folder>
+		<folder>js</folder>
+	</media>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="presets" type="subform" multiple="true"
+					label="PLG_MEDIA-ACTION_DPEMOJI_PRESETS_LABEL" description="PLG_MEDIA-ACTION_DPEMOJI_PRESETS_DESC">
+					<form>
+						<fields>
+							<field name="title" type="text" required="true" label="PLG_MEDIA-ACTION_DPEMOJI_TITLE_LABEL"/>
+							<field name="quality" type="number" min="0" max="100" step="1" default="80" filter="integer"
+								label="PLG_MEDIA-ACTION_DPEMOJI_QUALITY_LABEL"/>
+							<field name="provider" type="list" default="browser"
+								label="PLG_MEDIA-ACTION_DPEMOJI_PROVIDER_LABEL" description="PLG_MEDIA-ACTION_DPEMOJI_PROVIDER_DESC">
+								<option value="browser">PLG_MEDIA-ACTION_DPEMOJI_PROVIDER_BROWSER</option>
+								<option value="twitter">PLG_MEDIA-ACTION_DPEMOJI_PROVIDER_TWITTER</option>
+								<option value="openmoji">PLG_MEDIA-ACTION_DPEMOJI_PROVIDER_OPENMOJI</option>
+								<option value="noto">PLG_MEDIA-ACTION_DPEMOJI_PROVIDER_NOTO</option>
+							</field>
+							<field name="size" type="number" min="30" max="1000" step="1" default="50" filter="integer"
+								label="PLG_MEDIA-ACTION_DPEMOJI_SIZE_LABEL" description="PLG_MEDIA-ACTION_DPEMOJI_SIZE_DESC"/>
+						</fields>
+					</form>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

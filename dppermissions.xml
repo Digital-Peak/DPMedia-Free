@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="filesystem" method="upgrade">
+	<name>plg_filesystem_dppermissions</name>
+	<author>Digital Peak</author>
+	<creationDate>22 Sep 2022</creationDate>
+	<copyright>(C) 2022 Digital Peak GmbH</copyright>
+	<license>http://www.gnu.org/licenses/gpl-3.0.html</license>
+	<authorEmail>info@digital-peak.com</authorEmail>
+	<authorUrl>joomla.digital-peak.com</authorUrl>
+	<version>1.5.2</version>
+	<description>PLG_FILESYSTEM_DPPERMISSIONS_XML_DESCRIPTION</description>
+	<namespace path="src">DigitalPeak\Plugin\Filesystem\DPPermissions</namespace>
+	<files>
+		<folder plugin="dppermissions">language</folder>
+		<folder>services</folder>
+		<folder>sql</folder>
+		<folder>src</folder>
+	</files>
+	<media destination="plg_filesystem_dppermissions" folder="media">
+		<folder>css</folder>
+		<folder>js</folder>
+	</media>
+	<install>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+		</sql>
+	</install>
+	<uninstall>
+		<sql>
+			<file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+		</sql>
+	</uninstall>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="allowed_groups" type="usergrouplist" multiple="true" layout="joomla.form.field.list-fancy-select"
+					label="PLG_FILESYSTEM_DPPERMISSIONS_ALLOWED_GROUPS_LABEL" description="PLG_FILESYSTEM_DPPERMISSIONS_ALLOWED_GROUPS_DESC"/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

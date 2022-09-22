@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="filesystem" method="upgrade">
+	<name>plg_filesystem_dppixabay</name>
+	<author>Digital Peak</author>
+	<creationDate>22 Sep 2022</creationDate>
+	<copyright>(C) 2021 Digital Peak GmbH</copyright>
+	<license>http://www.gnu.org/licenses/gpl-3.0.html</license>
+	<authorEmail>info@digital-peak.com</authorEmail>
+	<authorUrl>joomla.digital-peak.com</authorUrl>
+	<version>1.5.2</version>
+	<description>PLG_FILESYSTEM_DPPIXABAY_XML_DESCRIPTION</description>
+	<namespace path="src">DigitalPeak\Plugin\Filesystem\DPPixabay</namespace>
+	<files>
+		<folder plugin="dppixabay">language</folder>
+		<folder>services</folder>
+		<folder>src</folder>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="folders" type="subform" multiple="true"
+					label="PLG_FILESYSTEM_DPPIXABAY_FOLDERS_LABEL" description="PLG_FILESYSTEM_DPPIXABAY_FOLDERS_DESC">
+					<form>
+						<fields>
+							<field name="display_name" type="text" required="true" pattern="[^,;:]+"
+								label="PLG_FILESYSTEM_DPPIXABAY_DISPLAY_NAME_LABEL" description="PLG_FILESYSTEM_DPPIXABAY_DISPLAY_NAME_DESC"/>
+							<field name="search_query" type="text"
+								label="PLG_FILESYSTEM_DPPIXABAY_SEARCH_QUERY_LABEL" description="PLG_FILESYSTEM_DPPIXABAY_SEARCH_QUERY_DESC"/>
+							<field name="result_limit" type="text" default="300"
+								label="PLG_FILESYSTEM_DPPIXABAY_RESULT_LIMIT_LABEL" description="PLG_FILESYSTEM_DPPIXABAY_RESULT_LIMIT_DESC"/>
+							<field name="api_key" type="text" required="true"
+								label="PLG_FILESYSTEM_DPPIXABAY_API_KEY_LABEL" description="PLG_FILESYSTEM_DPPIXABAY_API_KEY_DESC"/>
+							<field name="local_media" type="list" default="0"
+								label="PLG_FILESYSTEM_DPPIXABAY_LOCAL_MEDIA_LABEL" description="PLG_FILESYSTEM_DPPIXABAY_LOCAL_MEDIA_DESC">
+								<option value="1">JYES</option>
+								<option value="0">JNO</option>
+							</field>
+							<field name="local_media_path" type="text" default="/images/dppixabay/media" showon="local_media:1"
+								label="PLG_FILESYSTEM_DPPIXABAY_LOCAL_MEDIA_PATH_LABEL" description="PLG_FILESYSTEM_DPPIXABAY_LOCAL_MEDIA_PATH_DESC"/>
+							<field name="local_image_width" type="text" default="0" showon="local_media:1"
+								label="PLG_FILESYSTEM_DPPIXABAY_LOCAL_IMAGES_WIDTH_LABEL" description="PLG_FILESYSTEM_DPPIXABAY_LOCAL_IMAGES_WIDTH_DESC"/>
+							<field name="local_image_height" type="text" default="0" showon="local_media:1"
+								label="PLG_FILESYSTEM_DPPIXABAY_LOCAL_IMAGES_HEIGHT_LABEL" description="PLG_FILESYSTEM_DPPIXABAY_LOCAL_IMAGES_HEIGHT_DESC"/>
+							<field name="cache" type="list" default="1"
+								label="PLG_FILESYSTEM_DPPIXABAY_CACHING_LABEL" description="PLG_FILESYSTEM_DPPIXABAY_CACHING_DESC">
+								<option value="1">JYES</option>
+								<option value="0">JNO</option>
+							</field>
+							<field name="cache_time" type="text" default="900" showon="cache:1"
+								label="PLG_FILESYSTEM_DPPIXABAY_CACHING_TIME_LABEL" description="PLG_FILESYSTEM_DPPIXABAY_CACHING_TIME_DESC"/>
+							<field name="access_token" type="hidden"/>
+						</fields>
+					</form>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
