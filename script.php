@@ -29,7 +29,7 @@ class Pkg_DPMediaInstallerScript extends \Joomla\CMS\Installer\InstallerScript
 		$this->run(
 			"delete from #__update_sites_extensions where extension_id in (select extension_id from #__extensions where element = 'pkg_dpmedia')"
 		);
-		$this->run("delete from #__update_sites where name like 'DPMedia%'");
+		$this->run("delete from #__update_sites where name like 'DPMedia Premium%' or name like 'DPMedia Professional%' or name like 'DPMedia Standard%'");
 
 		return true;
 	}

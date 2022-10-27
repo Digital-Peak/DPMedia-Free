@@ -66,7 +66,7 @@ trait DownloadMediaTrait
 		}
 
 		file_put_contents(JPATH_SITE . $filePath, $this->getContent($file, $config));
-		$this->resizeImage(JPATH_SITE . $filePath, $config->get('local_image_width', 0), $config->get('local_image_height', 0));
+		$this->resizeImage(JPATH_SITE . $filePath, $config->get('local_image_width', 0), $config->get('local_image_height', 0), true);
 		touch(JPATH_SITE . $filePath, strtotime($file->modified_date));
 
 		return $filePath;

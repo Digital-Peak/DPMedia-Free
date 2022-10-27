@@ -1,22 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
-<extension type="library" method="upgrade">
-	<name>lib_dpmedia</name>
+<?xml version="1.0" encoding="utf-8" ?>
+<extension type="plugin" group="user" method="upgrade">
+	<name>plg_user_dpmedia</name>
 	<author>Digital Peak</author>
-	<creationDate>22 Sep 2022</creationDate>
-	<copyright>(C) 2021 Digital Peak GmbH</copyright>
+	<creationDate>27 Oct 2022</creationDate>
+	<copyright>(C) 2022 Digital Peak GmbH</copyright>
 	<license>http://www.gnu.org/licenses/gpl-3.0.html</license>
 	<authorEmail>info@digital-peak.com</authorEmail>
 	<authorUrl>joomla.digital-peak.com</authorUrl>
-	<version>1.5.2</version>
-	<libraryname>lib_dpmedia</libraryname>
+	<version>1.6.0</version>
+	<description>PLG_USER_DPMEDIA_XML_DESCRIPTION</description>
+	<namespace path="src">DigitalPeak\Plugin\User\DPMedia</namespace>
 	<files>
-		<folder>layouts</folder>
+		<folder>language</folder>
+		<folder plugin="dpmedia">services</folder>
 		<folder>src</folder>
-		<folder>vendor</folder>
 	</files>
-	<media destination="lib_dpmedia" folder="media">
-		<folder>css</folder>
-		<folder>images</folder>
-		<folder>js</folder>
-	</media>
 </extension>

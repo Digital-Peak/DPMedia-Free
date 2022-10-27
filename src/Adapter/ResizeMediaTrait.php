@@ -22,20 +22,49 @@ trait ResizeMediaTrait
 	 * @param integer $width
 	 * @param integer $height
 	 * @param integer $quality
+	 * @param integer $aspectRation
 	 */
-	protected function resizeImage($path, $width, $height, $quality = 80)
+	protected function resizeImage($path, $width, $height, $quality = 80, $aspectRation = 1)
 	{
+		// Get the extension
 		$extension = is_object($path) ? $path->extension : pathinfo($path, PATHINFO_EXTENSION);
 		$extension = strtolower($extension);
+
+		// Only resize images we can actually handle
 		if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
 			return;
 		}
 
+		// Do nothing when new dimensions are not set
 		if (!$width && !$height) {
 			return;
 		}
 
+		// Create the image object
 		$imgObject = new Image(is_object($path) ? imagecreatefromstring($path->data) : $path);
+
+		// Get image dimensions
+		$imageWidth  = $imgObject->getWidth();
+		$imageHeight = $imgObject->getHeight();
+
+		// Do not enlarge
+		if ($width > $imageWidth && $height > $imageHeight) {
+			return;
+		}
+
+		// Modify the new dimensions when the aspect ratio should be kept
+		if ($aspectRation == 1) {
+			// When there is a width and the width of the image is bigger, reset the height
+			if ($width && $imageWidth > $imageHeight) {
+				$height = 0;
+			}
+
+			// When there is a height and the height of the image is bigger, reset the width
+			if ($height && $imageHeight > $imageWidth) {
+				$width = 0;
+			}
+		}
+
 		if ($width && $height) {
 			$imgObject->cropResize($width, $height, false);
 		} else {
@@ -53,7 +82,7 @@ trait ResizeMediaTrait
 
 		// The quality of png's must be between 0 and 9
 		if ($extension === 'png') {
-			$quality = min(9, $quality / 10);
+			$quality = (int)min(9, $quality / 10);
 		}
 
 		if (!is_object($path)) {

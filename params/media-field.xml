@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="fieldparams">
+		<fieldset name="fieldparams" addfieldprefix="DigitalPeak\Plugin\Content\DPMedia\Field">
+			<field name="directory" type="adapters"
+				label="PLG_CONTENT_DPMEDIA_ADAPTER_LABEL">
+				<option value=""></option>
+			</field>
+			<field name="dpmedia_accessible" type="list" default="1"
+				label="PLG_CONTENT_DPMEDIA_ACCESSIBLE_TYPE_LABEL" description="PLG_CONTENT_DPMEDIA_ACCESSIBLE_TYPE_DESC">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+		</fieldset>
+	</fields>
+</form>

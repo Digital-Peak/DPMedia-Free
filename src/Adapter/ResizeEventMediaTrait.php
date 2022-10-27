@@ -54,7 +54,8 @@ trait ResizeEventMediaTrait
 			$file,
 			$adapter->getConfig()->get('force_width', 0),
 			$adapter->getConfig()->get('force_height', 0),
-			$adapter->getConfig()->get('force_quality', 80)
+			$adapter->getConfig()->get('force_quality', 80),
+			$adapter->getConfig()->get('force_aspect_ratio', 0)
 		);
 	}
 }
