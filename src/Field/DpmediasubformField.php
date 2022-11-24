@@ -9,9 +9,10 @@ namespace DigitalPeak\Plugin\Content\DPMedia\Field;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Field\SubformField;
 use Joomla\CMS\Form\Form;
-use Joomla\CMS\Form\FormHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 
 class DpmediasubformField extends SubformField
@@ -96,10 +97,20 @@ class DpmediasubformField extends SubformField
 					$directory .= '&amp;force=1';
 				}
 				$directory .= $this->context;
+
+				// Disable fields when no id is available
+				if (empty($data['item']) && strpos($directory, 'dprestricted') === 0) {
+					// Only print warning on GET requests
+					if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+						Factory::getApplication()->enqueueMessage(Text::sprintf('PLG_CONTENT_DPMEDIA_FIELD_REMOVED_MESSAGE', $field->__get('title')), 'warning');
+					}
+					$form->removeField($field->__get('fieldname'), $field->__get('group'));
+					continue;
+				}
 			}
 
 			// Transform the field when is accessible media
-			if ($form->getFieldAttribute($field->__get('fieldname'), 'type', '', $field->__get('group')) === 'Accessiblemedia') {
+			if (strtolower($form->getFieldAttribute($field->__get('fieldname'), 'type', '', $field->__get('group'))) === 'accessiblemedia') {
 				$form->setFieldAttribute($field->__get('fieldname'), 'type', 'dpmediaaccessible', $field->__get('group'));
 			}
 			$form->setFieldAttribute($field->__get('fieldname'), 'directory', $directory, $field->__get('group'));
