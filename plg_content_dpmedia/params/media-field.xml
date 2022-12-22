@@ -6,6 +6,13 @@
 				label="PLG_CONTENT_DPMEDIA_ADAPTER_LABEL">
 				<option value=""></option>
 			</field>
+			<field name="types" type="list" default="images" multiple="true" layout="joomla.form.field.list-fancy-select"
+				label="PLG_CONTENT_DPMEDIA_TYPES_LABEL" description="PLG_CONTENT_DPMEDIA_TYPES_DESC">
+				<option value="images">PLG_CONTENT_DPMEDIA_TYPES_IMAGES</option>
+				<option value="audios">PLG_CONTENT_DPMEDIA_TYPES_AUDIOS</option>
+				<option value="videos">PLG_CONTENT_DPMEDIA_TYPES_VIDEOS</option>
+				<option value="documents">PLG_CONTENT_DPMEDIA_TYPES_DOCUMENTS</option>
+			</field>
 			<field name="dpmedia_accessible" type="list" default="1"
 				label="PLG_CONTENT_DPMEDIA_ACCESSIBLE_TYPE_LABEL" description="PLG_CONTENT_DPMEDIA_ACCESSIBLE_TYPE_DESC">
 				<option value="1">JYES</option>

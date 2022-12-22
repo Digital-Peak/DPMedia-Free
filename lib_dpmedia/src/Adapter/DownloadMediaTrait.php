@@ -52,7 +52,7 @@ trait DownloadMediaTrait
 	 *
 	 * @see DownloadMediaTrait::getMediaPath()
 	 */
-	protected function download(stdClass $file, Registry $config): string
+	public function download(stdClass $file, Registry $config): string
 	{
 		$filePath = $this->getMediaPath($file, $config);
 
@@ -82,7 +82,7 @@ trait DownloadMediaTrait
 	 */
 	protected function generateThumb(stdclass $file, Registry $config): string
 	{
-		if (!in_array($file->extension, $this->supportedThumbnailImageFormats)) {
+		if (!in_array(strtolower($file->extension), $this->supportedThumbnailImageFormats)) {
 			return '';
 		}
 

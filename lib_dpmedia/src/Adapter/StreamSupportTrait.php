@@ -23,6 +23,6 @@ trait StreamSupportTrait
 	 */
 	public function createResource(string $path, string $content)
 	{
-		return fopen('data://' . $this->mimeTypeMapping->getMimetype(strtolower(pathinfo($path, PATHINFO_EXTENSION))) . ';base64,' . base64_encode($content), 'r');
+		return fopen('data://' . $this->mimeTypeMapping->getMimetype(pathinfo($path, PATHINFO_EXTENSION)) . ';base64,' . base64_encode($content), 'r');
 	}
 }

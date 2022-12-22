@@ -57,6 +57,9 @@ class DpmediasubformField extends SubformField
 		parse_str(htmlspecialchars_decode($this->context), $data);
 		$customFields = !empty($data['context']) ? FieldsHelper::getFields($data['context'], null, false, null, true) : [];
 
+		// The removed fields
+		$removedFieldTitles = [];
+
 		// Loop over the field
 		foreach ($fields as $field) {
 			// Check if it is a media field
@@ -100,11 +103,9 @@ class DpmediasubformField extends SubformField
 
 				// Disable fields when no id is available
 				if (empty($data['item']) && strpos($directory, 'dprestricted') === 0) {
-					// Only print warning on GET requests
-					if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-						Factory::getApplication()->enqueueMessage(Text::sprintf('PLG_CONTENT_DPMEDIA_FIELD_REMOVED_MESSAGE', $field->__get('title')), 'warning');
-					}
 					$form->removeField($field->__get('fieldname'), $field->__get('group'));
+					$removedFieldTitles[] = $field->__get('title');
+
 					continue;
 				}
 			}
@@ -120,6 +121,11 @@ class DpmediasubformField extends SubformField
 			$args = html_entity_decode($directory);
 			$form->setFieldAttribute($field->__get('fieldname'), 'asset_field', 'none', $field->__get('group'));
 			$form->setFieldAttribute($field->__get('fieldname'), 'asset_id', substr($args, strpos($args, '&')), $field->__get('group'));
+		}
+
+		// Only print warning on GET requests
+		if ($removedFieldTitles && $_SERVER['REQUEST_METHOD'] === 'GET') {
+			Factory::getApplication()->enqueueMessage(Text::sprintf('PLG_CONTENT_DPMEDIA_FIELD_REMOVED_MESSAGE', implode(', ', $removedFieldTitles)), 'warning');
 		}
 	}
 }

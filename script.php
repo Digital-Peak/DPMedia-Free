@@ -25,6 +25,9 @@ class Pkg_DPMediaInstallerScript extends InstallerScript
 			$this->run("update `#__extensions` set enabled=1 where type = 'plugin' and name = 'plg_content_dpmedia'");
 			$this->run("update `#__extensions` set enabled=1 where type = 'plugin' and name = 'plg_user_dpmedia'");
 		}
+
+		// Make sure the installer plugin is enabled
+		$this->run("update `#__extensions` set enabled = 1 where name = 'plg_installer_dpmedia'");
 	}
 
 	private function run($query)

@@ -2996,7 +2996,7 @@ class MimeTypeMapping
 	 */
 	public function getMimetype(string $extension): string
 	{
-		if (!array_key_exists($extension, self::$mimeTypeMapping)) {
+		if (!array_key_exists(strtolower($extension), self::$mimeTypeMapping)) {
 			return '';
 		}
 

@@ -29,6 +29,7 @@ class DpmediaaccessibleField extends AccessiblemediaField
 
 		$args = html_entity_decode($this->directory);
 		$subForm->setFieldAttribute('imagefile', 'asset_id', substr($args, strpos($args, '&')));
+		$subForm->setFieldAttribute('imagefile', 'types', $this->element['types'] ?? 'images');
 
 		return $data;
 	}

@@ -120,6 +120,9 @@ class DPMedia extends CMSPlugin
 		// Flag if the JS assets should be loaded when there is at least one media field in the form
 		$found = false;
 
+		// The removed fields
+		$removedFieldTitles = [];
+
 		// Loop over the field
 		foreach ($form->getFieldset() as $field) {
 			// Check if it is a subform field
@@ -174,11 +177,9 @@ class DPMedia extends CMSPlugin
 
 			// Disable fields when no id is available
 			if (empty($id) && strpos($directory, 'dprestricted') === 0) {
-				// Only print warning on GET requests
-				if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-					$this->app->enqueueMessage(Text::sprintf('PLG_CONTENT_DPMEDIA_FIELD_REMOVED_MESSAGE', $field->__get('title')), 'warning');
-				}
 				$form->removeField($field->__get('fieldname'), $field->__get('group'));
+				$removedFieldTitles[] = $field->__get('title');
+
 				continue;
 			}
 
@@ -211,6 +212,11 @@ class DPMedia extends CMSPlugin
 			$args = html_entity_decode($directory);
 			$form->setFieldAttribute($field->__get('fieldname'), 'asset_field', 'none', $field->__get('group'));
 			$form->setFieldAttribute($field->__get('fieldname'), 'asset_id', substr($args, strpos($args, '&')), $field->__get('group'));
+		}
+
+		// Only print warning on GET requests
+		if ($removedFieldTitles && $_SERVER['REQUEST_METHOD'] === 'GET') {
+			$this->app->enqueueMessage(Text::sprintf('PLG_CONTENT_DPMEDIA_FIELD_REMOVED_MESSAGE', implode(', ', $removedFieldTitles)), 'warning');
 		}
 
 		// When no media field is loaded, then do nothing more
