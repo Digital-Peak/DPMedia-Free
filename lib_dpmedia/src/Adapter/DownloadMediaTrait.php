@@ -56,8 +56,13 @@ trait DownloadMediaTrait
 	{
 		$filePath = $this->getMediaPath($file, $config);
 
-		// Test if file exists and if modification date is greather or equal the given remote file
+		// Set the timezone to UTC for filemtime
+		$oldTZ = date_default_timezone_get();
+		date_default_timezone_set('UTC');
+
+		// Test if file exists and if modification date is greater or equal the given remote file
 		if (file_exists(JPATH_SITE . $filePath) && filemtime(JPATH_SITE . $filePath) >= strtotime($file->modified_date)) {
+			date_default_timezone_set($oldTZ);
 			return $filePath;
 		}
 
@@ -68,6 +73,7 @@ trait DownloadMediaTrait
 		file_put_contents(JPATH_SITE . $filePath, $this->getContent($file, $config));
 		$this->resizeImage(JPATH_SITE . $filePath, $config->get('local_image_width', 0), $config->get('local_image_height', 0), 75, true);
 		touch(JPATH_SITE . $filePath, strtotime($file->modified_date));
+		date_default_timezone_set($oldTZ);
 
 		return $filePath;
 	}
@@ -94,10 +100,15 @@ trait DownloadMediaTrait
 
 		$thumb = null;
 
+		// Set the timezone to UTC for filemtime
+		$oldTZ = date_default_timezone_get();
+		date_default_timezone_set('UTC');
+
 		$filePath = $this->getMediaPath($file, $thumbConfig);
 		if (file_exists(JPATH_SITE . $filePath) && filemtime(JPATH_SITE . $filePath) >= strtotime($file->modified_date)) {
 			$thumb = rtrim(Uri::root(), '/')  . $filePath;
 		}
+		date_default_timezone_set($oldTZ);
 
 		// To not bloat, only a certain amount of thumbnails are generated
 		static $thumbCount = 0;

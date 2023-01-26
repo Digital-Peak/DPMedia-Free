@@ -14,10 +14,10 @@
 			return;
 		}
 		document.addEventListener('onMediaFileSelected', (e) => {
-			if (!e.detail.path) {
+			if (Joomla.optionsStorage['csrf.token'].indexOf(info.pathInformation) > 0) {
 				return;
 			}
-			e.detail.path += info.pathInformation;
+			Joomla.optionsStorage['csrf.token'] = info.pathInformation + '&' + Joomla.optionsStorage['csrf.token'];
 		});
 		const modal = document.querySelector('div[id$="editors-xtd_image_modal"]');
 		if (!modal) {

@@ -246,8 +246,17 @@ class DPMedia extends CMSPlugin
 	{
 		// Load the path information from the JS store
 		$info = $this->app->getDocument()->getScriptOptions('DPMedia.cf.select');
-		if (empty($info) || empty($info['pathInformation']) || empty($info['adapter'])) {
+		if (empty($info) || empty($info['pathInformation']) || empty($info['defaultAdapter'])) {
 			return;
+		}
+
+		// Get the select config
+		$config = $this->app->getDocument()->getScriptOptions('media-picker-api');
+		if ($config && !empty($config['apiBaseUrl'])) {
+			$config['apiBaseUrl'] = $config['apiBaseUrl'] . $info['pathInformation'];
+
+			// Save the config in JS store
+			$this->app->getDocument()->addScriptOptions('media-picker-api', $config);
 		}
 
 		// Get the tinymce config
