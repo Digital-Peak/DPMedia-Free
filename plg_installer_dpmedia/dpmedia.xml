@@ -2,12 +2,12 @@
 <extension type="plugin" group="installer" method="upgrade">
 	<name>plg_installer_dpmedia</name>
 	<author>Digital Peak</author>
-	<creationDate>26 Jan 2023</creationDate>
+	<creationDate>2023-05</creationDate>
 	<copyright>(C) 2022 Digital Peak GmbH</copyright>
-	<license>http://www.gnu.org/licenses/gpl-3.0.html</license>
+	<license>https://www.gnu.org/licenses/gpl-3.0.html</license>
 	<authorEmail>info@digital-peak.com</authorEmail>
 	<authorUrl>joomla.digital-peak.com</authorUrl>
-	<version>1.7.1</version>
+	<version>1.8.0</version>
 	<description>PLG_INSTALLER_DPMEDIA_XML_DESCRIPTION</description>
 	<namespace path="src">DigitalPeak\Plugin\Installer\DPMedia</namespace>
 	<files>

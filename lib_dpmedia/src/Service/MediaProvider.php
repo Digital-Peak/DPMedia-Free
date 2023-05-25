@@ -2,7 +2,7 @@
 /**
  * @package   DPMedia
  * @copyright Copyright (C) 2021 Digital Peak GmbH. <https://www.digital-peak.com>
- * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
+ * @license   https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  */
 
 namespace DigitalPeak\Library\DPMedia\Service;
@@ -30,6 +30,8 @@ class MediaProvider implements ServiceProviderInterface
 
 	public function register(Container $container)
 	{
+		\JLoader::import('lib_dpmedia.vendor.autoload', JPATH_LIBRARIES);
+
 		$container->set(ThinHTTP::class, function (Container $container) {
 			return new ThinHTTP();
 		});
