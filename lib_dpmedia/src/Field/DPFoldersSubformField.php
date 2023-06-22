@@ -7,7 +7,6 @@
 
 namespace DigitalPeak\Library\DPMedia\Field;
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Field\SubformField;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;

@@ -7,18 +7,23 @@
 	'use strict';
 	document.addEventListener('DOMContentLoaded', (e) => {
 		const info = Joomla.getOptions('DPMedia.cf.select');
-		if (!info) {
-			return;
-		}
-		if (!info.pathInformation) {
+		if (!info || !info.pathInformation) {
 			return;
 		}
 		document.addEventListener('onMediaFileSelected', (e) => {
-			if (Joomla.optionsStorage['csrf.token'].indexOf(info.pathInformation) > 0) {
+			const storage = Joomla.optionsStorage['media-picker-api'];
+			if (!storage || !storage.apiBaseUrl) {
 				return;
 			}
-			Joomla.optionsStorage['csrf.token'] = info.pathInformation + '&' + Joomla.optionsStorage['csrf.token'];
+			storage.apiBaseUrl = storage.apiBaseUrl.replace('&' + info.pathInformation, '');
+			if (e.target.activeElement.src.indexOf('context=') === -1) {
+				return;
+			}
+			storage.apiBaseUrl += '&' + info.pathInformation;
 		});
+		if (!info.defaultAdapter) {
+			return;
+		}
 		const modal = document.querySelector('div[id$="editors-xtd_image_modal"]');
 		if (!modal) {
 			return;

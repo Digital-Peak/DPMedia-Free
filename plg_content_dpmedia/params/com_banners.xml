@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset name="component" addfieldprefix="DigitalPeak\Plugin\Content\DPMedia\Field">
+	<fieldset name="component" addfieldprefix="DigitalPeak\Library\DPMedia\Field">
 		<field name="dpmedia_adapter" type="adapters"
-				label="PLG_CONTENT_DPMEDIA_ADAPTER_LABEL">
+			label="PLG_CONTENT_DPMEDIA_ADAPTER_LABEL">
 			<option value=""></option>
 		</field>
 	</fieldset>
