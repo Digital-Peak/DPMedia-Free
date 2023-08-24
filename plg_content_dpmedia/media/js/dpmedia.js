@@ -5,7 +5,7 @@
  */
 (function () {
 	'use strict';
-	document.addEventListener('DOMContentLoaded', (e) => {
+	document.addEventListener('DOMContentLoaded', () => {
 		const info = Joomla.getOptions('DPMedia.cf.select');
 		if (!info || !info.pathInformation) {
 			return;

@@ -16,7 +16,6 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
-use stdClass;
 
 class DPMedia extends CMSPlugin
 {
@@ -44,7 +43,7 @@ class DPMedia extends CMSPlugin
 			return;
 		}
 
-		$customFields = FieldsHelper::getFields($context, $data instanceof stdClass ? $data : null);
+		$customFields = FieldsHelper::getFields($context, $data instanceof \stdClass ? $data : null);
 
 		// Loop over the field
 		foreach ($form->getFieldset() as $field) {

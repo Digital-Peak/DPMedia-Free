@@ -11,7 +11,6 @@ use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Filesystem\Path;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
-use stdClass;
 
 /**
  * Media download support for media adapters.
@@ -28,7 +27,7 @@ trait DownloadMediaTrait
 	/**
 	 * Returns the content of the file with the given config.
 	 *
-	 * @param stdClass $file
+	 * @param \stdClass $file
 	 * @param Registry  $config
 	 *
 	 * @return string
@@ -45,14 +44,14 @@ trait DownloadMediaTrait
 	/**
 	 * Downloads the given file to the local filesystem. The path relative to root is returned.
 	 *
-	 * @param stdClass $file
+	 * @param \stdClass $file
 	 * @param Registry  $config
 	 *
 	 * @return string
 	 *
 	 * @see DownloadMediaTrait::getMediaPath()
 	 */
-	public function download(stdClass $file, Registry $config): string
+	public function download(\stdClass $file, Registry $config): string
 	{
 		$filePath = $this->getMediaPath($file, $config);
 
@@ -81,12 +80,12 @@ trait DownloadMediaTrait
 	/**
 	 * Generates a thumbnail in the thumbnail path from the config. Fallback is default file in media.
 	 *
-	 * @param stdClass $file
+	 * @param \stdClass $file
 	 * @param Registry  $config
 	 *
 	 * @return string
 	 */
-	protected function generateThumb(stdclass $file, Registry $config): string
+	protected function generateThumb(\stdclass $file, Registry $config): string
 	{
 		if (!in_array(strtolower($file->extension), $this->supportedThumbnailImageFormats)) {
 			return '';
@@ -132,7 +131,7 @@ trait DownloadMediaTrait
 	 */
 	protected function deleteThumb(string $path, Registry $config)
 	{
-		$file            = new stdClass();
+		$file            = new \stdClass();
 		$file->extension = pathinfo($path, PATHINFO_EXTENSION);
 		$file->name      = basename($path);
 		$file->path      = dirname($path);
@@ -157,7 +156,7 @@ trait DownloadMediaTrait
 	 * Returns the path to the media file relative to the root. The root of the file is taken from the config
 	 * parameter local_media_path.
 	 *
-	 * @param stdClass $file
+	 * @param \stdClass $file
 	 * @param Registry  $config
 	 *
 	 * @return string
