@@ -174,6 +174,18 @@ class DPMedia extends CMSPlugin
 				continue;
 			}
 
+			$directory = urlencode($directory);
+
+			/**
+			 * There is a double encoding needed here for the front end, otherwise the media field is rendering &
+			 * characters on the front encoded which count as new arg as part of the route call.
+			 * https://github.com/joomla/joomla-cms/blob/4.4-dev/layouts/joomla/form/field/media.php#L115
+			 * `$url = Route::_($url);`
+			 */
+			if ($this->app->isClient('site')) {
+				$directory = urlencode($directory);
+			}
+
 			// Disable fields when no id is available
 			if (empty($id) && strpos($directory, 'dprestricted') === 0) {
 				$form->removeField($field->__get('fieldname'), $field->__get('group'));
