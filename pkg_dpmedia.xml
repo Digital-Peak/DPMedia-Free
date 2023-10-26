@@ -4,12 +4,12 @@
 	<packager>Digital Peak</packager>
 	<name>DPMedia</name>
 	<author>Digital Peak</author>
-	<creationDate>2023-09</creationDate>
+	<creationDate>2023-10</creationDate>
 	<copyright>(C) 2021 Digital Peak GmbH</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>info@digital-peak.com</authorEmail>
 	<authorUrl>joomla.digital-peak.com</authorUrl>
-	<version>1.9.3</version>
+	<version>1.9.4</version>
 	<files>
 		<file id="lib_dpmedia" type="library">lib_dpmedia.zip</file>
 		<file id="plg_content_dpmedia" type="plugin" group="content" client="site">plg_content_dpmedia.zip</file>
