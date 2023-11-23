@@ -137,7 +137,7 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface
 
 	public function getDisplayName()
 	{
-		return $this->app->getLanguage()->_('PLG_FILESYSTEM_DP' . strtoupper($this->name)  . '_DEFAULT_NAME');
+		return $this->app->getLanguage()->_('PLG_FILESYSTEM_DP' . strtoupper($this->name) . '_DEFAULT_NAME');
 	}
 
 	public function getAdapters()

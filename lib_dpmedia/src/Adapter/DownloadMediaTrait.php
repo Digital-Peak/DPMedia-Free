@@ -105,19 +105,19 @@ trait DownloadMediaTrait
 
 		$filePath = $this->getMediaPath($file, $thumbConfig);
 		if (file_exists(JPATH_SITE . $filePath) && filemtime(JPATH_SITE . $filePath) >= strtotime($file->modified_date)) {
-			$thumb = rtrim(Uri::root(), '/')  . $filePath;
+			$thumb = rtrim(Uri::root(), '/') . $filePath;
 		}
 		date_default_timezone_set($oldTZ);
 
 		// To not bloat, only a certain amount of thumbnails are generated
 		static $thumbCount = 0;
 		if (!$thumb && $thumbCount < $config->get('thumb_count', 10)) {
-			$thumb = rtrim(Uri::root(), '/') .  $this->download($file, $thumbConfig);
+			$thumb = rtrim(Uri::root(), '/') . $this->download($file, $thumbConfig);
 			$thumbCount++;
 		}
 
 		if (!$thumb) {
-			$thumb = rtrim(Uri::root(), '/')  . '/media/lib_dpmedia/images/default.jpg';
+			$thumb = rtrim(Uri::root(), '/') . '/media/lib_dpmedia/images/default.jpg';
 		}
 
 		return $thumb;

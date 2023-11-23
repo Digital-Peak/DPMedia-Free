@@ -23,9 +23,11 @@ class DpmediaaccessibleField extends AccessiblemediaField
 
 		$return = parent::setup($element, $value, $group);
 
+		$imageFile = $this->value->imagefile ?? ($this->value['imagefile'] ?? '');
+
 		// Encode the adapter
-		if (strpos($this->value['imagefile'] ?? '', 'joomlaImage://')) {
-			$this->value['imagefile'] = preg_replace_callback(
+		if (strpos($imageFile, 'joomlaImage://')) {
+			$imageFile = preg_replace_callback(
 				'/joomlaImage:\/\/([^\/]+)/',
 				function ($matches) {
 					if (!$matches) {
@@ -46,8 +48,16 @@ class DpmediaaccessibleField extends AccessiblemediaField
 
 					return 'joomlaImage://' . urlencode($adapter);
 				},
-				$this->value['imagefile']
+				$imageFile
 			);
+
+			if (is_object($this->value)) {
+				$this->value->imagefile = $imageFile;
+			}
+
+			if (is_array($this->value)) {
+				$this->value['imagefile'] = $imageFile;
+			}
 		}
 
 		return $return;
