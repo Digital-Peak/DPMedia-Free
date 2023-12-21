@@ -8,7 +8,7 @@
 namespace DigitalPeak\Library\DPMedia\Adapter;
 
 use DigitalPeak\ThinHTTPInterface;
-use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\Path;
@@ -25,6 +25,10 @@ abstract class Adapter implements AdapterInterface
 	protected $mimeTypeMapping;
 	protected $http;
 	protected $db;
+
+	/**
+	 * @var CMSApplicationInterface
+	 */
 	protected $app;
 	protected $name;
 	protected $useLastPathSegment = true;
@@ -35,7 +39,7 @@ abstract class Adapter implements AdapterInterface
 		ThinHTTPInterface $http,
 		MimeTypeMapping $mimeTypeMapping,
 		DatabaseInterface $db,
-		CMSApplication $app
+		CMSApplicationInterface $app
 	) {
 		$this->config          = $config;
 		$this->http            = $http;

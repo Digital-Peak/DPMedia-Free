@@ -24,12 +24,29 @@ return new class () implements InstallerScriptInterface {
 
 	public function update(InstallerAdapter $adapter): bool
 	{
+
 		$file = $adapter->getParent()->getPath('source') . '/deleted.php';
-		if (!file_exists($file)) {
+		if (file_exists($file)) {
+			require $file;
+		}
+
+		$path    = JPATH_ADMINISTRATOR . '/manifests/packages/pkg_dpmedia.xml';
+		$version = null;
+
+		if (file_exists($path)) {
+			$manifest = simplexml_load_file($path);
+			$version  = (string)$manifest->version;
+		}
+
+		if (empty($version) || $version == 'DP_DEPLOY_VERSION') {
 			return true;
 		}
 
-		require $file;
+		if (version_compare($version, '1.10.0') == -1) {
+			$this->run("update #__extensions set package_id = 0
+			where package_id = (select * from (select extension_id from #__extensions where element ='pkg_dpmedia') as e)
+			and name not in ('lib_dpmedia', 'plg_content_dpmedia', 'plg_installer_dpmedia', 'plg_user_dpmedia')");
+		}
 
 		return true;
 	}

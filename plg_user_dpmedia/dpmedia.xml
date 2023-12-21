@@ -2,12 +2,12 @@
 <extension type="plugin" group="user" method="upgrade">
 	<name>plg_user_dpmedia</name>
 	<author>Digital Peak</author>
-	<creationDate>2023-11</creationDate>
+	<creationDate>2023-12</creationDate>
 	<copyright>(C) 2022 Digital Peak GmbH</copyright>
 	<license>https://www.gnu.org/licenses/gpl-3.0.html</license>
 	<authorEmail>info@digital-peak.com</authorEmail>
 	<authorUrl>joomla.digital-peak.com</authorUrl>
-	<version>1.9.5</version>
+	<version>1.10.0</version>
 	<description>PLG_USER_DPMEDIA_XML_DESCRIPTION</description>
 	<namespace path="src">DigitalPeak\Plugin\User\DPMedia</namespace>
 	<files>

@@ -9,6 +9,7 @@ namespace DigitalPeak\Plugin\Content\DPMedia\Extension;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Categories\Categories;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Form\FormHelper;
@@ -105,6 +106,10 @@ class DPMedia extends CMSPlugin
 			return;
 		}
 
+		if (strpos($context, 'com_categories.category') === 0) {
+			$form->loadFile($root . '/com_categories.xml');
+		}
+
 		// When not enough information, return
 		if (!strpos($context, '.')) {
 			return;
@@ -114,6 +119,15 @@ class DPMedia extends CMSPlugin
 		$adapter = $this->params->get('adapter');
 		if ($componentParams = ComponentHelper::getParams(substr($context, 0, strpos($context, '.')))) {
 			$adapter = $componentParams->get('dpmedia_adapter', $adapter);
+		}
+
+		// Load the adapter from the category
+		if ($catId = $this->getCategoryId($data, $form)) {
+			list($component, $section) = explode('.', $context);
+			$componentInstance         = Categories::getInstance($component);
+			if ($componentInstance && $category = $componentInstance->get($catId)) {
+				$adapter = $category->getParams()->get('dpmedia_adapter', $adapter);
+			}
 		}
 
 		// Flag if the JS assets should be loaded when there is at least one media field in the form
@@ -285,5 +299,44 @@ class DPMedia extends CMSPlugin
 
 		// Save the config in JS store
 		$this->app->getDocument()->addScriptOptions('plg_editor_tinymce', $config);
+	}
+
+	/**
+	 * Does return the category ID for the given data with a fallback to the form.
+	 *
+	 * The logic is borrowed from com_fields.
+	 *
+	 * @param object $data
+	 * @param Form $form
+	 *
+	 * return int
+	*/
+	private function getCategoryId(object $data, Form $form): int
+	{
+		$id = $data->catid ?? $form->getValue('catid');
+
+		$id = \is_array($id) ? (int) reset($id) : (int) $id;
+
+		if (!$id && $formField = $form->getField('catid')) {
+			$id = $formField->getAttribute('default', null);
+
+			if (!$id) {
+				// Choose the first category available
+				$catOptions = $formField->options;
+
+				if ($catOptions && !empty($catOptions[0]->value)) {
+					$id = (int) $catOptions[0]->value;
+				}
+			}
+		}
+
+		if ($form->getField('catid')) {
+			list($component, $section) = FieldsHelper::extract($form->getName(), $data);
+			$form->setFieldAttribute('catid', 'refresh-enabled', true);
+			$form->setFieldAttribute('catid', 'refresh-cat-id', $id);
+			$form->setFieldAttribute('catid', 'refresh-section', $section);
+		}
+
+		return $id;
 	}
 }
