@@ -12,10 +12,14 @@ use Joomla\CMS\Installer\InstallerAdapter;
 use Joomla\CMS\Installer\InstallerScriptInterface;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
 
-return new class () implements InstallerScriptInterface {
-	private $minimumPhp    = '7.4.0';
-	private $minimumJoomla = '4.2.0';
+return new class () implements InstallerScriptInterface, DatabaseAwareInterface {
+	use DatabaseAwareTrait;
+
+	private string $minimumPhp    = '7.4.0';
+	private string $minimumJoomla = '4.2.0';
 
 	public function install(InstallerAdapter $adapter): bool
 	{
@@ -35,10 +39,10 @@ return new class () implements InstallerScriptInterface {
 
 		if (file_exists($path)) {
 			$manifest = simplexml_load_file($path);
-			$version  = (string)$manifest->version;
+			$version  = $manifest instanceof SimpleXMLElement ? (string)$manifest->version : null;
 		}
 
-		if (empty($version) || $version == 'DP_DEPLOY_VERSION') {
+		if ($version === null || $version === '' || $version === '0' || $version == 'DP_DEPLOY_VERSION') {
 			return true;
 		}
 
@@ -89,14 +93,14 @@ return new class () implements InstallerScriptInterface {
 		return true;
 	}
 
-	private function run($query)
+	private function run(string $query): void
 	{
 		try {
-			$db = Factory::getDbo();
+			$db = $this->getDatabase();
 			$db->setQuery($query);
 			$db->execute();
-		} catch (Exception $e) {
-			Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+		} catch (Exception $exception) {
+			Factory::getApplication()->enqueueMessage($exception->getMessage(), 'error');
 		}
 	}
 };

@@ -11,10 +11,10 @@ use DigitalPeak\ThinHTTPInterface;
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Filesystem\Path;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Component\Media\Administrator\Adapter\AdapterInterface;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
 
 /**
@@ -22,17 +22,14 @@ use Joomla\Registry\Registry;
  */
 abstract class Adapter implements AdapterInterface
 {
-	protected $mimeTypeMapping;
-	protected $http;
-	protected $db;
+	protected MimeTypeMapping $mimeTypeMapping;
+	protected ThinHTTPInterface $http;
+	protected DatabaseInterface $db;
 
-	/**
-	 * @var CMSApplicationInterface
-	 */
-	protected $app;
-	protected $name;
-	protected $useLastPathSegment = true;
-	private $config;
+	protected CMSApplicationInterface $app;
+	protected string $name;
+	protected bool $useLastPathSegment = true;
+	private Registry $config;
 
 	public function __construct(
 		Registry $config,
@@ -54,45 +51,27 @@ abstract class Adapter implements AdapterInterface
 
 	/**
 	 * Fetch the file for the given path.
-	 *
-	 * @param string $path
-	 *
-	 * @return \stdClass
 	 */
 	abstract protected function fetchFile(string $path = '/'): \stdClass;
 
 	/**
 	 * Fetch the files for the given path.
-	 *
-	 * @param string $path
-	 *
-	 * @return array
 	 */
 	abstract protected function fetchFiles(string $path = '/'): array;
 
 	/**
 	 * Fetch the files for the given path and search needle.
-	 *
-	 * @param string $path
-	 * @param string $needle
-	 * @param bool   $recursive
-	 *
-	 * @return array
 	 */
 	abstract protected function fetchSearch(string $path, string $needle, bool $recursive = false): array;
 
 	/**
 	 * Fetch the url for the given path.
-	 *
-	 * @param string $path
-	 *
-	 * @return string
 	 */
 	protected function fetchUrl(string $path): string
 	{
 		$file = $this->getFile($path);
 
-		return $file && $file->url ? $file->url : '';
+		return $file instanceof \stdClass && $file->url ? $file->url : '';
 	}
 
 	public function getFile(string $path = '/'): \stdClass
@@ -115,7 +94,7 @@ abstract class Adapter implements AdapterInterface
 		return $this->fetchSearch($path, $needle, $recursive);
 	}
 
-	public function getResource(string $path)
+	public function getResource(string $path): mixed
 	{
 		throw new \Exception('Not implemented, please get the pro version.');
 	}
@@ -130,12 +109,12 @@ abstract class Adapter implements AdapterInterface
 		throw new \Exception('Not implemented, please get the pro version.');
 	}
 
-	public function updateFile(string $name, string $path, $data)
+	public function updateFile(string $name, string $path, $data): void
 	{
 		throw new \Exception('Not implemented, please get the pro version.');
 	}
 
-	public function delete(string $path)
+	public function delete(string $path): void
 	{
 		throw new \Exception('Not implemented, please get the pro version.');
 	}
@@ -157,16 +136,12 @@ abstract class Adapter implements AdapterInterface
 
 	/**
 	 * Returns the id for the given path, basically it strips the last segment.
-	 *
-	 * @param string $id
-	 *
-	 * @return string
 	 */
 	protected function getPathId(string $path): string
 	{
 		$id = basename($path);
 		if (strpos($id, '.')) {
-			$id = pathinfo($id, PATHINFO_FILENAME);
+			return pathinfo($id, PATHINFO_FILENAME);
 		}
 
 		return $id;
@@ -174,15 +149,11 @@ abstract class Adapter implements AdapterInterface
 
 	/**
 	 * Returns the real path for the given path.
-	 *
-	 * @param string $path
-	 *
-	 * @return string
 	 */
 	protected function getPath(string $path): string
 	{
 		// Append the root folder when in root
-		if (!$path || $path == '/' || !$this->useLastPathSegment) {
+		if ($path === '' || $path === '0' || $path == '/' || !$this->useLastPathSegment) {
 			$path = rtrim($this->getConfig()->get('root_folder', '/'), '/') . '/' . $path;
 		}
 
@@ -190,26 +161,22 @@ abstract class Adapter implements AdapterInterface
 		$path = rtrim($path, '/');
 
 		// Normalize
-		$path = $path ? Path::clean($path, '/') : $path;
+		$path = $path !== '' && $path !== '0' ? Path::clean($path, '/') : $path;
 
 		return $path;
 	}
 
 	/**
 	 * Returns a date object for the given date string respecting the global or user timezone.
-	 *
-	 * @params string $date
-	 *
-	 * @return Date
 	 */
 	protected function getDate(string $date = null): Date
 	{
-		$dateObj = Factory::getDate($date ?: '');
+		$dateObj = Factory::getDate($date !== null && $date !== '' && $date !== '0' ? $date : '');
 
 		$timezone = $this->app->get('offset');
 		$user     = $this->app->getIdentity();
 
-		if ($user->id) {
+		if ($user && $user->id !== 0) {
 			$userTimezone = $user->getParam('timezone');
 
 			if (!empty($userTimezone)) {
@@ -226,8 +193,6 @@ abstract class Adapter implements AdapterInterface
 
 	/**
 	 * Returns the config.
-	 *
-	 * @return Registry
 	 */
 	public function getConfig(): Registry
 	{
@@ -236,8 +201,6 @@ abstract class Adapter implements AdapterInterface
 
 	/**
 	 * Returns the name.
-	 *
-	 * @return string
 	 */
 	public function getName(): string
 	{
@@ -246,14 +209,12 @@ abstract class Adapter implements AdapterInterface
 
 	/**
 	 * Updates the internal params. Can be use D when an access token has changed.
-	 *
-	 * @param string $compareKey
 	 */
-	protected function updateParams($compareKey = 'refresh_token')
+	protected function updateParams(string $compareKey = 'refresh_token'): void
 	{
 		$plugin = PluginHelper::getPlugin('filesystem', 'dp' . $this->name);
 		if (!$plugin) {
-			return null;
+			return;
 		}
 
 		$pluginParams = new Registry($plugin->params);
@@ -267,10 +228,10 @@ abstract class Adapter implements AdapterInterface
 		}
 
 		$query = $this->db->getQuery(true)
-			->update($this->db->quoteName('#__extensions'))
-			->set($this->db->quoteName('params') . '=' . $this->db->quote($pluginParams->toString()))
-			->where($this->db->quoteName('element') . '=' . $this->db->quote('dp' . $this->name))
-			->where($this->db->quoteName('type') . '=' . $this->db->quote('plugin'));
+			->update('#__extensions')
+			->set('params =' . $this->db->quote($pluginParams->toString()))
+			->where('element =' . $this->db->quote('dp' . $this->name))
+			->where('type =' . $this->db->quote('plugin'));
 		$this->db->setQuery($query);
 		$this->db->execute();
 	}

@@ -14,7 +14,7 @@ namespace DigitalPeak\Library\DPMedia\Adapter;
  */
 class MimeTypeMapping
 {
-	private static $mimeTypeMapping = [
+	private static array $mimeTypeMapping = [
 		  'wof' => [
 			0 => 'application/font-woff',
 		  ],

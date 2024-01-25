@@ -16,7 +16,7 @@ class DPMedia extends CMSPlugin
 	/** @var CMSApplication $app */
 	protected $app;
 
-	public function onInstallerBeforePackageDownload(&$url, &$headers)
+	public function onInstallerBeforePackageDownload(string &$url, array &$headers): void
 	{
 		if (strpos($url, '/download/dpmedia/') === false) {
 			return;
@@ -27,6 +27,7 @@ class DPMedia extends CMSPlugin
 		$model->setState('filter.enabled', 1);
 		$model->setState('list.start', 0);
 		$model->setState('list.limit', 1);
+
 		$updateSite = $model->getItems();
 
 		// Check if there is a download ID

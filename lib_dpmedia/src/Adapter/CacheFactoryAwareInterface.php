@@ -16,8 +16,6 @@ interface CacheFactoryAwareInterface
 {
 	/**
 	 * Set the cache factory.
-	 *
-	 * @param CacheControllerFactoryInterface $cacheFactory
 	 */
-	public function setCacheFactory(CacheControllerFactoryInterface $cacheFactory);
+	public function setCacheFactory(CacheControllerFactoryInterface $cacheFactory): void;
 }

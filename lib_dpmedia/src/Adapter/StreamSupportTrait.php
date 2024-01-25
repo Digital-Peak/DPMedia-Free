@@ -22,6 +22,15 @@ trait StreamSupportTrait
 	 */
 	public function createResource(string $path, string $content)
 	{
-		return fopen('data://' . $this->mimeTypeMapping->getMimetype(pathinfo($path, PATHINFO_EXTENSION)) . ';base64,' . base64_encode($content), 'r');
+		$handle = fopen(
+			'data://' . $this->mimeTypeMapping->getMimetype(pathinfo($path, PATHINFO_EXTENSION)) . ';base64,' . base64_encode($content),
+			'r'
+		);
+
+		if ($handle === false) {
+			throw new \Exception('Can not open file!');
+		}
+
+		return $handle;
 	}
 }

@@ -7,22 +7,26 @@
 
 use DigitalPeak\Plugin\User\DPMedia\Extension\DPMedia;
 use Joomla\CMS\Extension\PluginInterface;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
 
 return new class () implements ServiceProviderInterface {
-	public function register(Container $container)
+	public function register(Container $container): void
 	{
 		$container->set(
 			PluginInterface::class,
-			function (Container $container) {
+			static function (Container $container): DPMedia {
 				$dispatcher = $container->get(DispatcherInterface::class);
-				return new DPMedia(
+				$plugin     = new DPMedia(
 					$dispatcher,
 					(array) PluginHelper::getPlugin('content', 'dpmedia')
 				);
+				$plugin->setApplication(Factory::getApplication());
+
+				return $plugin;
 			}
 		);
 	}

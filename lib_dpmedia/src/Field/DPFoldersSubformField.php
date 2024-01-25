@@ -16,14 +16,15 @@ use Joomla\CMS\Uri\Uri;
 class DPFoldersSubformField extends SubformField
 {
 	protected $type = 'Dpfolders';
-	protected $pluginName;
+	protected string $pluginName;
 
-	public function getInput()
+	protected function getInput(): string
 	{
 		HTMLHelper::_('script', 'plg_filesystem_dp' . $this->pluginName . '/dptoken.min.js', ['relative' => true, 'version' => 'auto']);
 
 		$html = parent::getInput();
-		$html .= HTMLHelper::_(
+
+		return $html . HTMLHelper::_(
 			'bootstrap.renderModal',
 			'dp' . $this->pluginName . '-modal',
 			[
@@ -43,13 +44,11 @@ class DPFoldersSubformField extends SubformField
 				JPATH_LIBRARIES . '/lib_dpmedia/layouts'
 			)
 		);
-
-		return $html;
 	}
 
-	protected function getRedirectUri()
+	protected function getRedirectUri(): string
 	{
-		$uri = !isset($_SERVER['HTTP_HOST']) ? Uri::getInstance('http://localhost') : Uri::getInstance();
+		$uri = isset($_SERVER['HTTP_HOST']) ? Uri::getInstance() : Uri::getInstance('http://localhost');
 		if (filter_var($uri->getHost(), FILTER_VALIDATE_IP)) {
 			$uri->setHost('localhost');
 		}

@@ -7,9 +7,9 @@
 
 namespace DigitalPeak\Library\DPMedia\Adapter;
 
-use Joomla\CMS\Filesystem\Folder;
-use Joomla\CMS\Filesystem\Path;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Filesystem\Folder;
+use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
 
 /**
@@ -22,32 +22,20 @@ trait DownloadMediaTrait
 	/**
 	 * The supported formats to generate thumbnails from.
 	 */
-	private $supportedThumbnailImageFormats = ['jpg', 'jpeg', 'png', 'tiff', 'tif', 'gif', 'bmp'];
+	private array $supportedThumbnailImageFormats = ['jpg', 'jpeg', 'png', 'tiff', 'tif', 'gif', 'bmp'];
 
 	/**
 	 * Returns the content of the file with the given config.
-	 *
-	 * @param \stdClass $file
-	 * @param Registry  $config
-	 *
-	 * @return string
 	 */
 	abstract protected function getContent(\stdclass $file, Registry $config): string;
 
 	/**
 	* Returns the name.
-	*
-	* @return string
 	*/
 	abstract protected function getName(): string;
 
 	/**
 	 * Downloads the given file to the local filesystem. The path relative to root is returned.
-	 *
-	 * @param \stdClass $file
-	 * @param Registry  $config
-	 *
-	 * @return string
 	 *
 	 * @see DownloadMediaTrait::getMediaPath()
 	 */
@@ -70,7 +58,7 @@ trait DownloadMediaTrait
 		}
 
 		file_put_contents(JPATH_SITE . $filePath, $this->getContent($file, $config));
-		$this->resizeImage(JPATH_SITE . $filePath, $config->get('local_image_width', 0), $config->get('local_image_height', 0), 75, true);
+		$this->resizeImage(JPATH_SITE . $filePath, $config->get('local_image_width', 0), $config->get('local_image_height', 0), 75, 1);
 		touch(JPATH_SITE . $filePath, strtotime($file->modified_date));
 		date_default_timezone_set($oldTZ);
 
@@ -79,11 +67,6 @@ trait DownloadMediaTrait
 
 	/**
 	 * Generates a thumbnail in the thumbnail path from the config. Fallback is default file in media.
-	 *
-	 * @param \stdClass $file
-	 * @param Registry  $config
-	 *
-	 * @return string
 	 */
 	protected function generateThumb(\stdclass $file, Registry $config): string
 	{
@@ -111,13 +94,13 @@ trait DownloadMediaTrait
 
 		// To not bloat, only a certain amount of thumbnails are generated
 		static $thumbCount = 0;
-		if (!$thumb && $thumbCount < $config->get('thumb_count', 10)) {
+		if (($thumb === null || $thumb === '' || $thumb === '0') && $thumbCount < $config->get('thumb_count', 10)) {
 			$thumb = rtrim(Uri::root(), '/') . $this->download($file, $thumbConfig);
 			$thumbCount++;
 		}
 
-		if (!$thumb) {
-			$thumb = rtrim(Uri::root(), '/') . '/media/lib_dpmedia/images/default.jpg';
+		if ($thumb === null || $thumb === '' || $thumb === '0') {
+			return rtrim(Uri::root(), '/') . '/media/lib_dpmedia/images/default.jpg';
 		}
 
 		return $thumb;
@@ -125,11 +108,8 @@ trait DownloadMediaTrait
 
 	/**
 	 * Deletes a thumbnail in the thumbnail path from the config when it exists.
-	 *
-	 * @param string   $path
-	 * @param Registry $config
 	 */
-	protected function deleteThumb(string $path, Registry $config)
+	protected function deleteThumb(string $path, Registry $config): void
 	{
 		$file            = new \stdClass();
 		$file->extension = pathinfo($path, PATHINFO_EXTENSION);
@@ -137,7 +117,7 @@ trait DownloadMediaTrait
 		$file->path      = dirname($path);
 
 		if (!in_array($file->extension, $this->supportedThumbnailImageFormats)) {
-			return '';
+			return;
 		}
 
 		$thumbConfig = new Registry([
@@ -155,11 +135,6 @@ trait DownloadMediaTrait
 	/**
 	 * Returns the path to the media file relative to the root. The root of the file is taken from the config
 	 * parameter local_media_path.
-	 *
-	 * @param \stdClass $file
-	 * @param Registry  $config
-	 *
-	 * @return string
 	 */
 	protected function getMediaPath(\stdclass $file, Registry $config): string
 	{

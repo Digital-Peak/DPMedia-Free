@@ -7,7 +7,7 @@
 
 namespace DigitalPeak\Library\DPMedia\OAuth;
 
-use DigitalPeak\ThinHTTP;
+use DigitalPeak\ThinHTTPInterface;
 use Joomla\Utilities\ArrayHelper;
 
 /**
@@ -20,22 +20,13 @@ class Client
 	 * It creates a proper signature and and makes a HTTP get request with the needed auth headers.
 	 * The body parameters can be either a string or an array. When array, then the $parameters are merged in as well.
 	 * The response from the service is returned.
-	 *
-	 * @param string   $service
-	 * @param array    $parameters
-	 * @param ThinHTTP $http
-	 * @param string   $method
-	 * @param mixed    $bodyParameters
-	 * @param array    $headers
-	 *
-	 * @return \stdClass
 	 */
 	public static function call(
 		string $service,
 		array $parameters,
-		ThinHTTP $http,
+		ThinHTTPInterface $http,
 		string $method = 'get',
-		$bodyParameters = null,
+		string $bodyParameters = '',
 		array $headers = []
 	): \stdClass {
 		// Setup parameters
@@ -55,25 +46,25 @@ class Client
 		unset($parameters['oauth_token_secret']);
 
 		// Build the base string
-		$baseStringParams = array_map(fn ($k, $p) => $k . '=' . rawurlencode($p), array_keys($parameters), array_values($parameters));
+		$baseStringParams = array_map(static fn ($k, $p): string => $k . '=' . rawurlencode($p), array_keys($parameters), array_values($parameters));
 		$baseStr          = strtoupper($method) . '&' . rawurlencode($service) . '&' . rawurlencode(implode('&', $baseStringParams));
 
 		// Create the signature
 		$parameters['oauth_signature'] = rawurlencode(base64_encode(hash_hmac('sha1', $baseStr, $key, true)));
 
 		// Compile the auth header
-		$authParameters = array_filter($parameters, fn ($k) => strpos($k, 'oauth') === 0, ARRAY_FILTER_USE_KEY);
+		$authParameters = array_filter($parameters, static fn ($k): bool => strpos($k, 'oauth') === 0, ARRAY_FILTER_USE_KEY);
 		uksort($authParameters, 'strcmp');
 		$headers[] = 'Authorization: OAuth ' . ArrayHelper::toString($authParameters, '=', ',');
 
 		// Extract the parameters for the url
-		$urlParameters = array_filter($parameters, fn ($k) => strpos($k, 'oauth') !== 0, ARRAY_FILTER_USE_KEY);
-		$urlParameters = array_map(fn ($k, $p) => $k . '=' . rawurlencode($p), array_keys($urlParameters), array_values($urlParameters));
+		$urlParameters = array_filter($parameters, static fn ($k): bool => strpos($k, 'oauth') !== 0, ARRAY_FILTER_USE_KEY);
+		$urlParameters = array_map(static fn ($k, $p): string => $k . '=' . rawurlencode($p), array_keys($urlParameters), array_values($urlParameters));
 
 		// Make the request
 		return $http->request(
-			$service . ($urlParameters ? '?' . implode('&', $urlParameters) : ''),
-			$bodyParameters ?: null,
+			$service . ($urlParameters !== [] ? '?' . implode('&', $urlParameters) : ''),
+			$bodyParameters !== '' && $bodyParameters !== '0' ? $bodyParameters : null,
 			null,
 			null,
 			$headers,

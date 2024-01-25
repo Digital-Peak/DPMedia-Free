@@ -23,8 +23,10 @@ trait ResizeMediaTrait
 	 * @param integer $height
 	 * @param integer $quality
 	 * @param integer $aspectRation
+	 *
+	 * @phpstan-param string|object{data: string, extension: string} $path
 	 */
-	protected function resizeImage($path, $width, $height, $quality = 80, $aspectRation = 1)
+	protected function resizeImage($path, $width, $height, $quality = 80, $aspectRation = 1): void
 	{
 		// Get the extension
 		$extension = is_object($path) ? $path->extension : pathinfo($path, PATHINFO_EXTENSION);
@@ -41,7 +43,7 @@ trait ResizeMediaTrait
 		}
 
 		// Create the image object
-		$imgObject = new Image(is_object($path) ? imagecreatefromstring($path->data) : $path);
+		$imgObject = new Image(empty($path->data) ? $path : imagecreatefromstring($path->data));
 
 		// Get image dimensions
 		$imageWidth  = $imgObject->getWidth();
@@ -92,6 +94,8 @@ trait ResizeMediaTrait
 
 		ob_start();
 		$imgObject->toFile(null, $type, ['quality' => $quality]);
+		// PHPStan object shapes are immutable
+		// @phpstan-ignore-next-line
 		$path->data = ob_get_contents();
 		ob_end_clean();
 	}

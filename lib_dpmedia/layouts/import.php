@@ -14,9 +14,14 @@ use Joomla\CMS\Language\Text;
 
 extract($displayData);
 
+/**
+ * @var string $plugin
+ * @var string $text
+ * @var string $uri
+ */
+
 Form::addFormPath(JPATH_PLUGINS . '/filesystem/dp' . $plugin);
 
-/** @var Form $form */
 $form = Factory::getContainer()->get(FormFactoryInterface::class)->createForm('dp' . $plugin, ['control' => 'dp']);
 $form->loadFile('dp' . $plugin, false, '//form/fields');
 ?>
@@ -24,11 +29,9 @@ $form->loadFile('dp' . $plugin, false, '//form/fields');
 	<p><?php echo Text::sprintf($text, $uri, $uri); ?></p>
 	<hr/>
 	<?php foreach ($form->getFieldset() as $field) { ?>
-		<?php if (!$form->getFieldAttribute($field->__get('fieldname'), 'import')) { ?>
-			<?php continue; ?>
-		<?php } ?>
+		<?php if (!$form->getFieldAttribute($field->fieldname, 'import')) { continue; } ?>
 		<?php $field->__set('required', 'false'); ?>
-		<?php $field->__set('class', str_replace('required','',$field->__get('class'))); ?>
+		<?php $field->__set('class', str_replace('required','',$field->class)); ?>
 		<div class="control-group">
 			<div class="control-label">
 				<?php echo $field->label; ?>

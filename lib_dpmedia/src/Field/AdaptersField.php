@@ -22,7 +22,7 @@ class AdaptersField extends ListField
 
 		foreach ($this->getProviderManager()->getProviders() as $provider) {
 			foreach ($provider->getAdapters() as $adapter) {
-				$options[] = [
+				$options[] = (object)[
 					'text'  => $adapter->getAdapterName() . ' [' . $provider->getDisplayName() . ']',
 					'value' => $provider->getID() . '-' . $adapter->getAdapterName()
 				];

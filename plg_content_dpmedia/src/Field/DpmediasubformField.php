@@ -17,8 +17,8 @@ use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 
 class DpmediasubformField extends SubformField
 {
-	protected $context;
-	protected $adapter;
+	protected string $context;
+	protected string $adapter;
 
 	public function setup(\SimpleXMLElement $element, $value, $group = null)
 	{
@@ -52,10 +52,12 @@ class DpmediasubformField extends SubformField
 		return $forms;
 	}
 
-	private function loadFields(Form $form, array $fields)
+	private function loadFields(Form $form, array $fields): void
 	{
 		parse_str(htmlspecialchars_decode($this->context), $data);
-		$customFields = !empty($data['context']) ? FieldsHelper::getFields($data['context'], null, false, null, true) : [];
+
+		$context      = $data['context'];
+		$customFields = empty($context) ? [] : FieldsHelper::getFields(is_array($context) ? implode('', $context) : $context, null, false, null, true);
 
 		// The removed fields
 		$removedFieldTitles = [];
@@ -63,7 +65,7 @@ class DpmediasubformField extends SubformField
 		// Loop over the field
 		foreach ($fields as $field) {
 			// Check if it is a media field
-			if ($field->__get('type') !== 'Media' && $field->__get('type') !== 'Accessiblemedia') {
+			if ($field->type !== 'Media' && $field->type !== 'Accessiblemedia') {
 				continue;
 			}
 
@@ -71,12 +73,11 @@ class DpmediasubformField extends SubformField
 				if ($customField->label !== (string)$field->element->attributes()->label || $customField->fieldparams->get('dpmedia_accessible', 1)) {
 					continue;
 				}
-
-				$form->setFieldAttribute($field->__get('fieldname'), 'type', 'dpmedia', $field->__get('group'));
+				$form->setFieldAttribute($field->fieldname, 'type', 'dpmedia', $field->group);
 			}
 
 			// Get the directory
-			$directory = $field->__get('directory');
+			$directory = $field->directory;
 			if (strpos($directory, 'context') === false) {
 				// Banners has a hardcoded directory
 				if ($directory === 'banners') {
@@ -103,29 +104,29 @@ class DpmediasubformField extends SubformField
 
 				// Disable fields when no id is available
 				if (empty($data['item']) && strpos($directory, 'dprestricted') === 0) {
-					$form->removeField($field->__get('fieldname'), $field->__get('group'));
-					$removedFieldTitles[] = $field->__get('title');
+					$form->removeField($field->fieldname, $field->group);
+					$removedFieldTitles[] = $field->title;
 
 					continue;
 				}
 			}
 
 			// Transform the field when is accessible media
-			if (strtolower($form->getFieldAttribute($field->__get('fieldname'), 'type', '', $field->__get('group'))) === 'accessiblemedia') {
-				$form->setFieldAttribute($field->__get('fieldname'), 'type', 'dpmediaaccessible', $field->__get('group'));
+			if (strtolower($form->getFieldAttribute($field->fieldname, 'type', '', $field->group)) === 'accessiblemedia') {
+				$form->setFieldAttribute($field->fieldname, 'type', 'dpmediaaccessible', $field->group);
 			}
-			$form->setFieldAttribute($field->__get('fieldname'), 'directory', $directory, $field->__get('group'));
+			$form->setFieldAttribute($field->fieldname, 'directory', $directory, $field->group);
 			$field->__set('directory', $directory);
 
 			// For direct media set also the asset
 			$args = html_entity_decode($directory);
-			$form->setFieldAttribute($field->__get('fieldname'), 'asset_field', 'none', $field->__get('group'));
-			$form->setFieldAttribute($field->__get('fieldname'), 'asset_id', substr($args, strpos($args, '&')), $field->__get('group'));
+			$form->setFieldAttribute($field->fieldname, 'asset_field', 'none', $field->group);
+			$form->setFieldAttribute($field->fieldname, 'asset_id', substr($args, strpos($args, '&') ?: 0), $field->group);
 		}
-
 		// Only print warning on GET requests
-		if ($removedFieldTitles && $_SERVER['REQUEST_METHOD'] === 'GET') {
-			Factory::getApplication()->enqueueMessage(Text::sprintf('PLG_CONTENT_DPMEDIA_FIELD_REMOVED_MESSAGE', implode(', ', $removedFieldTitles)), 'warning');
+		if ($removedFieldTitles === [] || $_SERVER['REQUEST_METHOD'] !== 'GET') {
+			return;
 		}
+		Factory::getApplication()->enqueueMessage(Text::sprintf('PLG_CONTENT_DPMEDIA_FIELD_REMOVED_MESSAGE', implode(', ', $removedFieldTitles)), 'warning');
 	}
 }

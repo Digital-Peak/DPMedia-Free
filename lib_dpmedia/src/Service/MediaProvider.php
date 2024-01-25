@@ -8,10 +8,13 @@
 namespace DigitalPeak\Library\DPMedia\Service;
 
 use DigitalPeak\Library\DPMedia\Adapter\MimeTypeMapping;
+use DigitalPeak\Library\DPMedia\Extension\Media;
 use DigitalPeak\ThinHTTP;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Extension\PluginInterface;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
@@ -21,36 +24,37 @@ use Joomla\Event\DispatcherInterface;
  */
 class MediaProvider implements ServiceProviderInterface
 {
-	private $extensionClassName;
+	private string $extensionClassName;
 
 	public function __construct(string $extensionClassName)
 	{
 		$this->extensionClassName = $extensionClassName;
 	}
 
-	public function register(Container $container)
+	public function register(Container $container): void
 	{
-		\JLoader::import('lib_dpmedia.vendor.autoload', JPATH_LIBRARIES);
+		require_once JPATH_LIBRARIES . '/lib_dpmedia/vendor/autoload.php';
 
-		$container->set(ThinHTTP::class, function (Container $container) {
-			return new ThinHTTP();
-		});
-		$container->set(MimeTypeMapping::class, function (Container $container) {
-			return new MimeTypeMapping();
-		});
+		$container->set(ThinHTTP::class, static fn (Container $container): ThinHTTP => new ThinHTTP());
+		$container->set(MimeTypeMapping::class, static fn (Container $container): MimeTypeMapping => new MimeTypeMapping());
 
 		$container->set(
 			PluginInterface::class,
 			function (Container $container) {
-				$plugin = PluginHelper::getPlugin('filesystem', 'dp' . strtolower(basename(str_replace('\\', '/', $this->extensionClassName))));
-
-				return new $this->extensionClassName(
+				$plugin = new $this->extensionClassName(
 					$container->get(DispatcherInterface::class),
 					$container->get(ThinHTTP::class),
 					$container->get(MimeTypeMapping::class),
 					$container->get(CacheControllerFactoryInterface::class),
-					(array) $plugin
+					(array) PluginHelper::getPlugin('filesystem', 'dp' . strtolower(basename(str_replace('\\', '/', $this->extensionClassName))))
 				);
+
+				if ($plugin instanceof Media) {
+					$plugin->setApplication(Factory::getApplication());
+					$plugin->setDatabase($container->get(DatabaseInterface::class));
+				}
+
+				return $plugin;
 			}
 		);
 	}

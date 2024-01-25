@@ -9,20 +9,20 @@ namespace DigitalPeak\Plugin\User\DPMedia\Extension;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Extension\BootableExtensionInterface;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Psr\Container\ContainerInterface;
 
 class DPMedia extends CMSPlugin implements BootableExtensionInterface
 {
-	protected $app;
-
-	public function boot(ContainerInterface $container)
+	public function boot(ContainerInterface $container): void
 	{
-		$plugin = $this->app->bootPlugin('dpmedia', 'content');
-		if (!$plugin) {
+		$app = $this->getApplication();
+		if (!$app instanceof CMSApplicationInterface) {
 			return;
 		}
-		$plugin->registerListeners();
+
+		$app->bootPlugin('dpmedia', 'content')->registerListeners();
 	}
 }

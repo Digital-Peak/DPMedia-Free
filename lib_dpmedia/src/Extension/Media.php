@@ -11,19 +11,25 @@ use DigitalPeak\Library\DPMedia\Adapter\CacheFactoryAwareInterface;
 use DigitalPeak\Library\DPMedia\Adapter\MimeTypeMapping;
 use DigitalPeak\Library\DPMedia\Adapter\ResizeEventMediaTrait;
 use DigitalPeak\ThinHTTP;
-use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Application\CMSApplicationInterface;
+use Joomla\CMS\Application\CMSWebApplicationInterface;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Component\Media\Administrator\Adapter\AdapterInterface;
 use Joomla\Component\Media\Administrator\Event\MediaProviderEvent;
 use Joomla\Component\Media\Administrator\Event\OAuthCallbackEvent;
 use Joomla\Component\Media\Administrator\Provider\ProviderInterface;
+use Joomla\Database\DatabaseAwareInterface;
+use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 
-class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface
+class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface, DatabaseAwareInterface
 {
 	use ResizeEventMediaTrait;
+	use DatabaseAwareTrait;
 
 	public static function getSubscribedEvents(): array
 	{
@@ -34,22 +40,19 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface
 		];
 	}
 
-	/** @var CMSApplication */
-	protected $app;
-	protected $db;
 	protected $autoloadLanguage = true;
 
-	protected $http;
-	protected $mimeTypeMapping;
-	protected $cacheFactory;
-	protected $name;
+	protected ThinHTTP $http;
+	protected MimeTypeMapping $mimeTypeMapping;
+	protected CacheControllerFactoryInterface $cacheFactory;
+	protected string $name;
 
 	public function __construct(
-		$subject,
+		DispatcherInterface $subject,
 		ThinHTTP $http,
 		MimeTypeMapping $mimeTypeMapping,
 		CacheControllerFactoryInterface $cacheFactory,
-		$config = []
+		array $config = []
 	) {
 		parent::__construct($subject, $config);
 
@@ -63,25 +66,20 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface
 	/**
 	 * Get a new folder configuration on an auth callback for the given uri. A new access token
 	 * can be fetched here.
-	 *
-	 * @param string $uri
-	 * @param array $config
-	 *
-	 * @return \stdClass
 	 */
 	protected function getFolderConfiguration(string $uri, array $params): ?\stdClass
 	{
 		return null;
 	}
 
-	public function setupProviders(MediaProviderEvent $event)
+	public function setupProviders(MediaProviderEvent $event): void
 	{
 		$event->getProviderManager()->registerProvider($this);
 	}
 
-	public function storeRefreshToken(OAuthCallbackEvent $event)
+	public function storeRefreshToken(OAuthCallbackEvent $event): void
 	{
-		$uri = !isset($_SERVER['HTTP_HOST']) ? Uri::getInstance('http://localhost') : Uri::getInstance();
+		$uri = isset($_SERVER['HTTP_HOST']) ? Uri::getInstance() : Uri::getInstance('http://localhost');
 		if (filter_var($uri->getHost(), FILTER_VALIDATE_IP)) {
 			$uri->setHost('localhost');
 		}
@@ -112,22 +110,25 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface
 		}
 		$this->params->set('folders', $folders);
 
-		$query = $this->db->getQuery(true)
-			->update($this->db->quoteName('#__extensions'))
-			->set($this->db->quoteName('params') . '=' . $this->db->quote($this->params->toString()))
-			->where($this->db->quoteName('element') . '=' . $this->db->quote('dp' . $this->name))
-			->where($this->db->quoteName('type') . '=' . $this->db->quote('plugin'));
-		$this->db->setQuery($query);
-		$this->db->execute();
+		$query = $this->getDatabase()->getQuery(true)
+			->update('#__extensions')
+			->set('params =' . $this->getDatabase()->quote($this->params->toString()))
+			->where('element =' . $this->getDatabase()->quote('dp' . $this->name))
+			->where('type =' . $this->getDatabase()->quote('plugin'));
+		$this->getDatabase()->setQuery($query);
+		$this->getDatabase()->execute();
 
 		$url = $_COOKIE['dp_url'];
 
 		// Clear cookies
-		foreach ($params as $key => $value) {
-			setcookie('dp_' . $key, '', time() - 3600);
+		foreach (array_keys($params) as $key) {
+			setcookie('dp_' . $key, '', ['expires' => time() - 3600]);
 		}
 
-		$this->app->redirect($url);
+		$app = $this->getApplication();
+		if ($app instanceof CMSWebApplicationInterface) {
+			$app->redirect($url);
+		}
 	}
 
 	public function getID()
@@ -137,11 +138,24 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface
 
 	public function getDisplayName()
 	{
-		return $this->app->getLanguage()->_('PLG_FILESYSTEM_DP' . strtoupper($this->name) . '_DEFAULT_NAME');
+		$app = $this->getApplication();
+		if (!$app instanceof CMSApplicationInterface) {
+			return '';
+		}
+
+		return $app->getLanguage()->_('PLG_FILESYSTEM_DP' . strtoupper($this->name) . '_DEFAULT_NAME');
 	}
 
-	public function getAdapters()
+	/**
+	 * @return mixed[]
+	 */
+	public function getAdapters(): array
 	{
+		$app = $this->getApplication();
+		if (!$app instanceof CMSApplicationInterface) {
+			return [];
+		}
+
 		$className = 'DigitalPeak\Plugin\Filesystem\DP' . ucfirst($this->name) . '\Adapter\\' . ucfirst($this->name) . 'Adapter';
 		$className .= class_exists($className . 'Writable') ? 'Writable' : '';
 
@@ -156,7 +170,8 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface
 
 		$data = [];
 		foreach ($folders as $folder) {
-			$adapter = new $className(new Registry($folder), $this->http, $this->mimeTypeMapping, $this->db, $this->app);
+			/** @var AdapterInterface $adapter */
+			$adapter = new $className(new Registry($folder), $this->http, $this->mimeTypeMapping, $this->getDatabase(), $app);
 
 			if ($adapter instanceof CacheFactoryAwareInterface) {
 				$adapter->setCacheFactory($this->cacheFactory);

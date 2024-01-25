@@ -20,35 +20,21 @@ trait CacheTrait
 
 	/**
 	 * Fetch the file for the given path.
-	 *
-	 * @param string $path
-	 *
-	 * @return \stdClass
 	 */
 	abstract protected function fetchFile(string $path = '/'): \stdClass;
 
 	/**
 	 * Fetch the files for the given path.
-	 *
-	 * @param string $path
-	 *
-	 * @return array
 	 */
 	abstract protected function fetchFiles(string $path = '/'): array;
 
 	/**
 	 * Fetch the files for the given path.
-	 *
-	 * @param string $path
-	 *
-	 * @return array
 	 */
 	abstract protected function fetchSearch(string $path, string $needle, bool $recursive = false): array;
 
 	/**
 	 * Returns the config for the caching functionality.
-	 *
-	 * @return Registry
 	 */
 	abstract protected function getConfig(): Registry;
 
@@ -114,20 +100,16 @@ trait CacheTrait
 
 	/**
 	 * Sets the internal cache factory.
-	 *
-	 * @param CacheControllerFactoryInterface $cacheFactory
 	 */
-	public function setCacheFactory(CacheControllerFactoryInterface $cacheFactory)
+	public function setCacheFactory(CacheControllerFactoryInterface $cacheFactory): void
 	{
 		$this->cacheFactory = $cacheFactory;
 	}
 
 	/**
 	 * Clears the cache for the give path.
-	 *
-	 * @param string $path
 	 */
-	protected function clearCache(string $path)
+	protected function clearCache(string $path): void
 	{
 		$cache = $this->cacheFactory->createCacheController('output', ['defaultgroup' => 'plg_filesystem_dp' . $this->name]);
 		$cache->remove('file-' . $path);

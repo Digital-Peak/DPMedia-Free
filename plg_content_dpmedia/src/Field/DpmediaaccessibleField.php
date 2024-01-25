@@ -15,6 +15,9 @@ use Joomla\CMS\Form\Form;
 
 class DpmediaaccessibleField extends AccessiblemediaField
 {
+	public $value;
+	public $directory;
+	public $element;
 	public function setup(\SimpleXMLElement $element, $value, $group = null)
 	{
 		if ($value && is_string($value) && strpos($value, '{') !== 0) {
@@ -29,13 +32,11 @@ class DpmediaaccessibleField extends AccessiblemediaField
 		if (strpos($imageFile, 'joomlaImage://')) {
 			$imageFile = preg_replace_callback(
 				'/joomlaImage:\/\/([^\/]+)/',
-				function ($matches) {
-					if (!$matches) {
-						return;
+				static function (array $matches): string {
+					if ($matches === []) {
+						return '';
 					}
-
 					$adapter = $matches[1];
-
 					/**
 					 * There is a double encoding needed here for the front end, otherwise the media field is rendering &
 					 * characters on the front encoded which count as new arg as part of the route call.
@@ -45,13 +46,13 @@ class DpmediaaccessibleField extends AccessiblemediaField
 					if (Factory::getApplication()->isClient('site')) {
 						$adapter = urlencode($adapter);
 					}
-
 					return 'joomlaImage://' . urlencode($adapter);
 				},
 				$imageFile
 			);
 
 			if (is_object($this->value)) {
+				// @phpstan-ignore-next-line
 				$this->value->imagefile = $imageFile;
 			}
 
@@ -68,7 +69,7 @@ class DpmediaaccessibleField extends AccessiblemediaField
 		$data = parent::loadSubFormData($subForm);
 
 		$args = html_entity_decode($this->directory);
-		$subForm->setFieldAttribute('imagefile', 'asset_id', substr($args, strpos($args, '&')));
+		$subForm->setFieldAttribute('imagefile', 'asset_id', substr($args, strpos($args, '&') ?: 0));
 		$subForm->setFieldAttribute('imagefile', 'types', $this->element['types'] ?? 'images');
 
 		return $data;

@@ -21,7 +21,7 @@ trait ResizeEventMediaTrait
 	 *
 	 * @return array
 	 */
-	abstract public function getAdapters();
+	abstract public function getAdapters(): array;
 
 	/**
 	 * Returns the id of the current instance.
@@ -33,18 +33,19 @@ trait ResizeEventMediaTrait
 	/**
 	 * Helper function for save events to automatically resize when required
 	 */
-	public function beforeSave(Event $event)
+	public function beforeSave(Event $event): void
 	{
-		if ($event->getArgument(0) != 'com_media.file') {
+		if ($event->getArgument('0') != 'com_media.file') {
 			return;
 		}
 
-		$file = $event->getArgument(1);
+		$file = $event->getArgument('1');
 
-		/** @var Adapter $adapter */
-		$adapter = array_reduce($this->getAdapters(), function ($found, Adapter $adapter) use ($file) {
-			return $this->getID() . '-' . $adapter->getAdapterName() == $file->adapter ? $adapter : $found;
-		});
+		/** @var Adapter|null $adapter */
+		$adapter = array_reduce(
+			$this->getAdapters(),
+			fn ($found, Adapter $adapter) => $this->getID() . '-' . $adapter->getAdapterName() == $file->adapter ? $adapter : $found
+		);
 
 		if (!$adapter || $adapter->getConfig()->get('force_resize', '0') != '1') {
 			return;
