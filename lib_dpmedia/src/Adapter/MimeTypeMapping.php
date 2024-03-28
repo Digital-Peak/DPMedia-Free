@@ -2990,7 +2990,6 @@ class MimeTypeMapping
 	/**
 	 * Returns the mime type for the given extension.
 	 *
-	 * @param string $extension
 	 *
 	 * @return string
 	 */

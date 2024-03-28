@@ -20,7 +20,6 @@ trait LocalMediaTrait
 	/**
 	 * Fetch the url for the given path.
 	 *
-	 * @param string $path
 	 *
 	 * @return string
 	 */

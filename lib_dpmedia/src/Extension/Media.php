@@ -10,7 +10,7 @@ namespace DigitalPeak\Library\DPMedia\Extension;
 use DigitalPeak\Library\DPMedia\Adapter\CacheFactoryAwareInterface;
 use DigitalPeak\Library\DPMedia\Adapter\MimeTypeMapping;
 use DigitalPeak\Library\DPMedia\Adapter\ResizeEventMediaTrait;
-use DigitalPeak\ThinHTTP;
+use DigitalPeak\ThinHTTP\ClientInterface;
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Application\CMSWebApplicationInterface;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
@@ -41,24 +41,16 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface,
 	}
 
 	protected $autoloadLanguage = true;
-
-	protected ThinHTTP $http;
-	protected MimeTypeMapping $mimeTypeMapping;
-	protected CacheControllerFactoryInterface $cacheFactory;
 	protected string $name;
 
 	public function __construct(
 		DispatcherInterface $subject,
-		ThinHTTP $http,
-		MimeTypeMapping $mimeTypeMapping,
-		CacheControllerFactoryInterface $cacheFactory,
+		protected ClientInterface $http,
+		protected MimeTypeMapping $mimeTypeMapping,
+		protected CacheControllerFactoryInterface $cacheFactory,
 		array $config = []
 	) {
 		parent::__construct($subject, $config);
-
-		$this->http            = $http;
-		$this->mimeTypeMapping = $mimeTypeMapping;
-		$this->cacheFactory    = $cacheFactory;
 
 		$this->name = strtolower((new \ReflectionClass($this))->getShortName());
 	}
@@ -94,7 +86,7 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface,
 
 		$params = [];
 		foreach ($_COOKIE as $key => $value) {
-			if (strpos($key, 'dp_') !== 0) {
+			if (!str_starts_with($key, 'dp_')) {
 				continue;
 			}
 			$params[str_replace('dp_', '', $key)] = $value;

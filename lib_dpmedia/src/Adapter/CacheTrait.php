@@ -116,7 +116,7 @@ trait CacheTrait
 		$cache->remove('files-' . $path);
 
 		// Also remove parent directory
-		if ($path && $path != '/') {
+		if ($path && $path !== '/') {
 			$cache->remove('file-' . dirname($path));
 			$cache->remove('files-' . dirname($path));
 		}

@@ -29,10 +29,7 @@ class DPMedia extends CMSPlugin
 
 	protected $autoloadLanguage = true;
 
-	/**
-	 * @param mixed $data
-	 */
-	public function onContentPrepareForm(Form $form, $data): void
+	public function onContentPrepareForm(Form $form, mixed $data): void
 	{
 		// Compile the real context
 		$context = FieldsHelper::extract($form->getName());
@@ -43,7 +40,7 @@ class DPMedia extends CMSPlugin
 		$context = implode('.', $context);
 
 		// When custom field form load the own preferences
-		if (strpos($context, 'com_fields.field') === 0 && !empty($data->type) && $data->type === 'media') {
+		if (str_starts_with($context, 'com_fields.field') && !empty($data->type) && $data->type === 'media') {
 			$form->loadFile(JPATH_PLUGINS . '/content/dpmedia/params/media-field.xml');
 			return;
 		}
@@ -73,10 +70,8 @@ class DPMedia extends CMSPlugin
 
 	/**
 	 * Add support for restricted media fields.
-	 *
-	 * @param mixed $data
 	 */
-	private function addRestrictedSupport(string $context, Form $form, $data): void
+	private function addRestrictedSupport(string $context, Form $form, mixed $data): void
 	{
 		$app = $this->getApplication();
 
@@ -119,12 +114,12 @@ class DPMedia extends CMSPlugin
 			return;
 		}
 
-		if (strpos($context, 'com_categories.category') === 0) {
+		if (str_starts_with((string) $context, 'com_categories.category')) {
 			$form->loadFile($root . '/com_categories.xml');
 		}
 
 		// When not enough information, return
-		if (strpos($context, '.') === 0 || strpos($context, '.') === false) {
+		if (str_starts_with((string) $context, '.') || !str_contains((string) $context, '.')) {
 			return;
 		}
 
@@ -133,13 +128,13 @@ class DPMedia extends CMSPlugin
 
 		// It can be that the component does not exist
 		// @phpstan-ignore-next-line
-		if ($componentParams = ComponentHelper::getParams(substr($context, 0, strpos($context, '.')))) {
+		if ($componentParams = ComponentHelper::getParams(substr((string) $context, 0, strpos((string) $context, '.')))) {
 			$adapter = $componentParams->get('dpmedia_adapter', $adapter);
 		}
 
 		// Load the adapter from the category
 		if (($catId = $this->getCategoryId($data, $form)) !== 0) {
-			[$component, $section] = explode('.', $context);
+			[$component, $section] = explode('.', (string) $context);
 			$componentInstance     = $app->bootComponent($component);
 			if ($componentInstance instanceof CategoryServiceInterface) {
 				$categoryInstance = $componentInstance->getCategory();
@@ -208,7 +203,7 @@ class DPMedia extends CMSPlugin
 				continue;
 			}
 
-			$directory = urlencode($directory);
+			$directory = urlencode((string) $directory);
 
 			/**
 			 * There is a double encoding needed here for the front end, otherwise the media field is rendering &
@@ -221,7 +216,7 @@ class DPMedia extends CMSPlugin
 			}
 
 			// Disable fields when no id is available
-			if (empty($id) && strpos($directory, 'dprestricted') === 0) {
+			if (empty($id) && str_starts_with($directory, 'dprestricted')) {
 				$form->removeField($field->fieldname, $field->group);
 				$removedFieldTitles[] = $field->__get('title');
 
@@ -235,7 +230,7 @@ class DPMedia extends CMSPlugin
 			$directory .= ':/';
 
 			// Only show the restricted adapter when is selected
-			if (strpos($directory, 'dprestricted') === 0) {
+			if (str_starts_with($directory, 'dprestricted')) {
 				$directory .= '&amp;force=1';
 			}
 
@@ -246,7 +241,7 @@ class DPMedia extends CMSPlugin
 			}
 
 			// Transform the field when is accessible media
-			if (strtolower($form->getFieldAttribute($field->fieldname, 'type', '', $field->group)) === 'accessiblemedia') {
+			if (strtolower((string) $form->getFieldAttribute($field->fieldname, 'type', '', $field->group)) === 'accessiblemedia') {
 				// Make sure the prefix exists
 				FormHelper::addFieldPrefix('DigitalPeak\Plugin\Content\DPMedia\Field');
 				$form->setFieldAttribute($field->fieldname, 'type', 'dpmediaaccessible', $field->group);
@@ -333,11 +328,10 @@ class DPMedia extends CMSPlugin
 	 *
 	 * The logic is borrowed from com_fields.
 	 *
-	 * @param object $data
 	 * @param Form $form
 	 *
 	 * return int
-	*/
+	 */
 	private function getCategoryId(object $data, Form $form): int
 	{
 		$id = $data->catid ?? $form->getValue('catid');

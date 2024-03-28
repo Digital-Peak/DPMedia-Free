@@ -7,7 +7,7 @@
 
 namespace DigitalPeak\Library\DPMedia\Adapter;
 
-use DigitalPeak\ThinHTTPInterface;
+use DigitalPeak\ThinHTTP\ClientInterface;
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
@@ -22,28 +22,16 @@ use Joomla\Registry\Registry;
  */
 abstract class Adapter implements AdapterInterface
 {
-	protected MimeTypeMapping $mimeTypeMapping;
-	protected ThinHTTPInterface $http;
-	protected DatabaseInterface $db;
-
-	protected CMSApplicationInterface $app;
 	protected string $name;
 	protected bool $useLastPathSegment = true;
-	private Registry $config;
 
 	public function __construct(
-		Registry $config,
-		ThinHTTPInterface $http,
-		MimeTypeMapping $mimeTypeMapping,
-		DatabaseInterface $db,
-		CMSApplicationInterface $app
+		private readonly Registry $config,
+		protected ClientInterface $http,
+		protected MimeTypeMapping $mimeTypeMapping,
+		protected DatabaseInterface $db,
+		protected CMSApplicationInterface $app
 	) {
-		$this->config          = $config;
-		$this->http            = $http;
-		$this->mimeTypeMapping = $mimeTypeMapping;
-		$this->db              = $db;
-		$this->app             = $app;
-
 		$this->name = strtolower((new \ReflectionClass($this))->getShortName());
 		$this->name = str_replace('adapter', '', $this->name);
 		$this->name = str_replace('writable', '', $this->name);
@@ -153,8 +141,8 @@ abstract class Adapter implements AdapterInterface
 	protected function getPath(string $path): string
 	{
 		// Append the root folder when in root
-		if ($path === '' || $path === '0' || $path == '/' || !$this->useLastPathSegment) {
-			$path = rtrim($this->getConfig()->get('root_folder', '/'), '/') . '/' . $path;
+		if ($path === '' || $path === '0' || $path === '/' || !$this->useLastPathSegment) {
+			$path = rtrim((string) $this->getConfig()->get('root_folder', '/'), '/') . '/' . $path;
 		}
 
 		// Replace last /

@@ -48,7 +48,7 @@ trait DownloadMediaTrait
 		date_default_timezone_set('UTC');
 
 		// Test if file exists and if modification date is greater or equal the given remote file
-		if (file_exists(JPATH_SITE . $filePath) && filemtime(JPATH_SITE . $filePath) >= strtotime($file->modified_date)) {
+		if (file_exists(JPATH_SITE . $filePath) && filemtime(JPATH_SITE . $filePath) >= strtotime((string) $file->modified_date)) {
 			date_default_timezone_set($oldTZ);
 			return $filePath;
 		}
@@ -59,7 +59,7 @@ trait DownloadMediaTrait
 
 		file_put_contents(JPATH_SITE . $filePath, $this->getContent($file, $config));
 		$this->resizeImage(JPATH_SITE . $filePath, $config->get('local_image_width', 0), $config->get('local_image_height', 0), 75, 1);
-		touch(JPATH_SITE . $filePath, strtotime($file->modified_date));
+		touch(JPATH_SITE . $filePath, strtotime((string) $file->modified_date) ?: 0);
 		date_default_timezone_set($oldTZ);
 
 		return $filePath;
@@ -70,7 +70,7 @@ trait DownloadMediaTrait
 	 */
 	protected function generateThumb(\stdclass $file, Registry $config): string
 	{
-		if (!in_array(strtolower($file->extension), $this->supportedThumbnailImageFormats)) {
+		if (!in_array(strtolower((string) $file->extension), $this->supportedThumbnailImageFormats)) {
 			return '';
 		}
 
@@ -87,7 +87,7 @@ trait DownloadMediaTrait
 		date_default_timezone_set('UTC');
 
 		$filePath = $this->getMediaPath($file, $thumbConfig);
-		if (file_exists(JPATH_SITE . $filePath) && filemtime(JPATH_SITE . $filePath) >= strtotime($file->modified_date)) {
+		if (file_exists(JPATH_SITE . $filePath) && filemtime(JPATH_SITE . $filePath) >= strtotime((string) $file->modified_date)) {
 			$thumb = rtrim(Uri::root(), '/') . $filePath;
 		}
 		date_default_timezone_set($oldTZ);
@@ -139,8 +139,8 @@ trait DownloadMediaTrait
 	protected function getMediaPath(\stdclass $file, Registry $config): string
 	{
 		$path = $config->get('local_media_path', '/images/dp' . $this->getName() . '/media') . '/';
-		$path .= dirname($file->path) . '/';
-		$path .= pathinfo($file->name, PATHINFO_FILENAME);
+		$path .= dirname((string) $file->path) . '/';
+		$path .= pathinfo((string) $file->name, PATHINFO_FILENAME);
 		$path .= '.' . $file->extension;
 
 		return Path::clean($path, '/');

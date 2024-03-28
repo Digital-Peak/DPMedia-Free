@@ -9,7 +9,8 @@ namespace DigitalPeak\Library\DPMedia\Service;
 
 use DigitalPeak\Library\DPMedia\Adapter\MimeTypeMapping;
 use DigitalPeak\Library\DPMedia\Extension\Media;
-use DigitalPeak\ThinHTTP;
+use DigitalPeak\ThinHTTP\ClientInterface;
+use DigitalPeak\ThinHTTP\CurlClient;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Extension\PluginInterface;
 use Joomla\CMS\Factory;
@@ -24,18 +25,15 @@ use Joomla\Event\DispatcherInterface;
  */
 class MediaProvider implements ServiceProviderInterface
 {
-	private string $extensionClassName;
-
-	public function __construct(string $extensionClassName)
+	public function __construct(private readonly string $extensionClassName)
 	{
-		$this->extensionClassName = $extensionClassName;
 	}
 
 	public function register(Container $container): void
 	{
 		require_once JPATH_LIBRARIES . '/lib_dpmedia/vendor/autoload.php';
 
-		$container->set(ThinHTTP::class, static fn (Container $container): ThinHTTP => new ThinHTTP());
+		$container->set(ClientInterface::class, static fn (Container $container): ClientInterface => new CurlClient());
 		$container->set(MimeTypeMapping::class, static fn (Container $container): MimeTypeMapping => new MimeTypeMapping());
 
 		$container->set(
@@ -43,7 +41,7 @@ class MediaProvider implements ServiceProviderInterface
 			function (Container $container) {
 				$plugin = new $this->extensionClassName(
 					$container->get(DispatcherInterface::class),
-					$container->get(ThinHTTP::class),
+					$container->get(ClientInterface::class),
 					$container->get(MimeTypeMapping::class),
 					$container->get(CacheControllerFactoryInterface::class),
 					(array) PluginHelper::getPlugin('filesystem', 'dp' . strtolower(basename(str_replace('\\', '/', $this->extensionClassName))))

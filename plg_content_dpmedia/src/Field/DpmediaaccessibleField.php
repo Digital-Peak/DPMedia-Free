@@ -20,7 +20,7 @@ class DpmediaaccessibleField extends AccessiblemediaField
 	public $element;
 	public function setup(\SimpleXMLElement $element, $value, $group = null)
 	{
-		if ($value && is_string($value) && strpos($value, '{') !== 0) {
+		if ($value && is_string($value) && !str_starts_with($value, '{')) {
 			$value = ['imagefile' => $value];
 		}
 
@@ -29,7 +29,7 @@ class DpmediaaccessibleField extends AccessiblemediaField
 		$imageFile = $this->value->imagefile ?? ($this->value['imagefile'] ?? '');
 
 		// Encode the adapter
-		if (strpos($imageFile, 'joomlaImage://')) {
+		if (strpos((string) $imageFile, 'joomlaImage://')) {
 			$imageFile = preg_replace_callback(
 				'/joomlaImage:\/\/([^\/]+)/',
 				static function (array $matches): string {
@@ -48,7 +48,7 @@ class DpmediaaccessibleField extends AccessiblemediaField
 					}
 					return 'joomlaImage://' . urlencode($adapter);
 				},
-				$imageFile
+				(string) $imageFile
 			);
 
 			if (is_object($this->value)) {

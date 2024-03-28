@@ -18,8 +18,8 @@ use Joomla\Database\DatabaseAwareTrait;
 return new class () implements InstallerScriptInterface, DatabaseAwareInterface {
 	use DatabaseAwareTrait;
 
-	private string $minimumPhp    = '7.4.0';
-	private string $minimumJoomla = '4.2.0';
+	private string $minimumPhp    = '8.1.0';
+	private string $minimumJoomla = '4.4.0';
 
 	public function install(InstallerAdapter $adapter): bool
 	{
@@ -42,7 +42,7 @@ return new class () implements InstallerScriptInterface, DatabaseAwareInterface 
 			$version  = $manifest instanceof SimpleXMLElement ? (string)$manifest->version : null;
 		}
 
-		if ($version === null || $version === '' || $version === '0' || $version == 'DP_DEPLOY_VERSION') {
+		if ($version === null || $version === '' || $version === '0' || $version === 'DP_DEPLOY_VERSION') {
 			return true;
 		}
 
@@ -80,7 +80,7 @@ return new class () implements InstallerScriptInterface, DatabaseAwareInterface 
 	public function postflight(string $type, InstallerAdapter $adapter): bool
 	{
 		// Perform some post install tasks
-		if ($type == 'install' || $type == 'discover_install') {
+		if ($type === 'install' || $type === 'discover_install') {
 			$this->run("update `#__extensions` set enabled=1 where type = 'plugin' and element like 'dp%' and folder like 'media-action'");
 			$this->run("update `#__extensions` set enabled=1 where type = 'plugin' and name = 'plg_filesystem_dprestricted'");
 			$this->run("update `#__extensions` set enabled=1 where type = 'plugin' and name = 'plg_content_dpmedia'");

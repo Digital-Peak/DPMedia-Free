@@ -31,7 +31,7 @@ $form->loadFile('dp' . $plugin, false, '//form/fields');
 	<?php foreach ($form->getFieldset() as $field) { ?>
 		<?php if (!$form->getFieldAttribute($field->fieldname, 'import')) { continue; } ?>
 		<?php $field->__set('required', 'false'); ?>
-		<?php $field->__set('class', str_replace('required','',$field->class)); ?>
+		<?php $field->__set('class', str_replace('required','',(string) $field->class)); ?>
 		<div class="control-group">
 			<div class="control-label">
 				<?php echo $field->label; ?>

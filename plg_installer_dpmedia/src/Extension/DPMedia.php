@@ -18,7 +18,7 @@ class DPMedia extends CMSPlugin
 
 	public function onInstallerBeforePackageDownload(string &$url, array &$headers): void
 	{
-		if (strpos($url, '/download/dpmedia/') === false) {
+		if (!str_contains($url, '/download/dpmedia/')) {
 			return;
 		}
 

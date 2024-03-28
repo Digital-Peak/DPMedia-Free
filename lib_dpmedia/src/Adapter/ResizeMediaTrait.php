@@ -18,15 +18,13 @@ trait ResizeMediaTrait
 	 * Resizes the image on the current path with width and height. If the path is an
 	 * object then it must have the properties extension and data.
 	 *
-	 * @param mixed   $path
 	 * @param integer $width
 	 * @param integer $height
 	 * @param integer $quality
 	 * @param integer $aspectRation
-	 *
 	 * @phpstan-param string|object{data: string, extension: string} $path
 	 */
-	protected function resizeImage($path, $width, $height, $quality = 80, $aspectRation = 1): void
+	protected function resizeImage(mixed $path, $width, $height, $quality = 80, $aspectRation = 1): void
 	{
 		// Get the extension
 		$extension = is_object($path) ? $path->extension : pathinfo($path, PATHINFO_EXTENSION);

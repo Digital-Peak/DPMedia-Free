@@ -15,7 +15,7 @@ class DpmediaField extends MediaField
 {
 	public function setup(\SimpleXMLElement $element, $value, $group = null)
 	{
-		if (is_string($value) && strpos($value, '{') === 0) {
+		if (is_string($value) && str_starts_with($value, '{')) {
 			$value = json_decode($value);
 		}
 
