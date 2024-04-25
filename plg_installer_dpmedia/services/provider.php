@@ -21,7 +21,7 @@ return new class () implements ServiceProviderInterface {
 				$dispatcher = $container->get(DispatcherInterface::class);
 				return new DPMedia(
 					$dispatcher,
-					(array) PluginHelper::getPlugin('installer', 'dpmedia')
+					(array)PluginHelper::getPlugin('installer', 'dpmedia')
 				);
 			}
 		);

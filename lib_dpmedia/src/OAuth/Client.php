@@ -46,7 +46,7 @@ class Client
 		unset($parameters['oauth_token_secret']);
 
 		// Build the base string
-		$baseStringParams = array_map(static fn ($k, $p): string => $k . '=' . rawurlencode((string) $p), array_keys($parameters), array_values($parameters));
+		$baseStringParams = array_map(static fn ($k, $p): string => $k . '=' . rawurlencode((string)$p), array_keys($parameters), array_values($parameters));
 		$baseStr          = strtoupper($method) . '&' . rawurlencode($service) . '&' . rawurlencode(implode('&', $baseStringParams));
 
 		// Create the signature
@@ -59,7 +59,7 @@ class Client
 
 		// Extract the parameters for the url
 		$urlParameters = array_filter($parameters, static fn ($k): bool => !str_starts_with($k, 'oauth'), ARRAY_FILTER_USE_KEY);
-		$urlParameters = array_map(static fn ($k, $p): string => $k . '=' . rawurlencode((string) $p), array_keys($urlParameters), array_values($urlParameters));
+		$urlParameters = array_map(static fn ($k, $p): string => $k . '=' . rawurlencode((string)$p), array_keys($urlParameters), array_values($urlParameters));
 
 		// Make the request
 		return $http->request(

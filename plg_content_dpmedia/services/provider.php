@@ -22,7 +22,7 @@ return new class () implements ServiceProviderInterface {
 				$dispatcher = $container->get(DispatcherInterface::class);
 				$plugin     = new DPMedia(
 					$dispatcher,
-					(array) PluginHelper::getPlugin('content', 'dpmedia')
+					(array)PluginHelper::getPlugin('content', 'dpmedia')
 				);
 				$plugin->setApplication(Factory::getApplication());
 

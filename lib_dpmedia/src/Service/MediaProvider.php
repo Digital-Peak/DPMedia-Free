@@ -44,7 +44,7 @@ class MediaProvider implements ServiceProviderInterface
 					$container->get(ClientInterface::class),
 					$container->get(MimeTypeMapping::class),
 					$container->get(CacheControllerFactoryInterface::class),
-					(array) PluginHelper::getPlugin('filesystem', 'dp' . strtolower(basename(str_replace('\\', '/', $this->extensionClassName))))
+					(array)PluginHelper::getPlugin('filesystem', 'dp' . strtolower(basename(str_replace('\\', '/', $this->extensionClassName))))
 				);
 
 				if ($plugin instanceof Media) {

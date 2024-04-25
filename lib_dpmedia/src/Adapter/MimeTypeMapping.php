@@ -2999,6 +2999,6 @@ class MimeTypeMapping
 			return '';
 		}
 
-		return self::$mimeTypeMapping[$extension][0];
+		return self::$mimeTypeMapping[strtolower($extension)][0];
 	}
 }

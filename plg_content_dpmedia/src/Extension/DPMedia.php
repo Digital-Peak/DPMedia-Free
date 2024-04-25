@@ -114,12 +114,12 @@ class DPMedia extends CMSPlugin
 			return;
 		}
 
-		if (str_starts_with((string) $context, 'com_categories.category')) {
+		if (str_starts_with((string)$context, 'com_categories.category')) {
 			$form->loadFile($root . '/com_categories.xml');
 		}
 
 		// When not enough information, return
-		if (str_starts_with((string) $context, '.') || !str_contains((string) $context, '.')) {
+		if (str_starts_with((string)$context, '.') || !str_contains((string)$context, '.')) {
 			return;
 		}
 
@@ -128,13 +128,13 @@ class DPMedia extends CMSPlugin
 
 		// It can be that the component does not exist
 		// @phpstan-ignore-next-line
-		if ($componentParams = ComponentHelper::getParams(substr((string) $context, 0, strpos((string) $context, '.')))) {
+		if ($componentParams = ComponentHelper::getParams(substr((string)$context, 0, strpos((string)$context, '.')))) {
 			$adapter = $componentParams->get('dpmedia_adapter', $adapter);
 		}
 
 		// Load the adapter from the category
 		if (($catId = $this->getCategoryId($data, $form)) !== 0) {
-			[$component, $section] = explode('.', (string) $context);
+			[$component, $section] = explode('.', (string)$context);
 			$componentInstance     = $app->bootComponent($component);
 			if ($componentInstance instanceof CategoryServiceInterface) {
 				$categoryInstance = $componentInstance->getCategory();
@@ -203,7 +203,7 @@ class DPMedia extends CMSPlugin
 				continue;
 			}
 
-			$directory = urlencode((string) $directory);
+			$directory = urlencode((string)$directory);
 
 			/**
 			 * There is a double encoding needed here for the front end, otherwise the media field is rendering &
@@ -241,7 +241,7 @@ class DPMedia extends CMSPlugin
 			}
 
 			// Transform the field when is accessible media
-			if (strtolower((string) $form->getFieldAttribute($field->fieldname, 'type', '', $field->group)) === 'accessiblemedia') {
+			if (strtolower((string)$form->getFieldAttribute($field->fieldname, 'type', '', $field->group)) === 'accessiblemedia') {
 				// Make sure the prefix exists
 				FormHelper::addFieldPrefix('DigitalPeak\Plugin\Content\DPMedia\Field');
 				$form->setFieldAttribute($field->fieldname, 'type', 'dpmediaaccessible', $field->group);
@@ -308,16 +308,32 @@ class DPMedia extends CMSPlugin
 
 		// Get the tinymce config
 		$config = $app->getDocument()->getScriptOptions('plg_editor_tinymce');
-		if (empty($config)
-		|| empty($config['tinyMCE'])
-		|| empty($config['tinyMCE']['default'])
-		|| empty($config['tinyMCE']['default']['comMediaAdapter'])) {
+		if (empty($config) || empty($config['tinyMCE'])) {
 			return;
 		}
 
 		// Set the default adapter in tinymce
-		$config['tinyMCE']['default']['comMediaAdapter']    = $info['defaultAdapter'] . ':/' . $info['pathInformation'];
-		$config['tinyMCE']['default']['parentUploadFolder'] = '';
+		if (!empty($config['tinyMCE']['default']) && !empty($config['tinyMCE']['default']['comMediaAdapter'])) {
+			$config['tinyMCE']['default']['comMediaAdapter']    = $info['defaultAdapter'] . ':/' . $info['pathInformation'];
+			$config['tinyMCE']['default']['parentUploadFolder'] = '';
+		}
+
+		// Add the adapter and path information to the tinymce buttons
+		foreach ($config['tinyMCE'] as $i => $type) {
+			if (empty($type['joomlaExtButtons']) || empty($type['joomlaExtButtons']['names'])) {
+				continue;
+			}
+
+			foreach ($type['joomlaExtButtons']['names'] as $index => $button) {
+				if (empty($button['action']) || $button['action'] !== 'modal-media' || str_contains((string)$button['options']['src'], '&path')) {
+					continue;
+				}
+
+				$button['options']['src'] .= '&path=' . $info['defaultAdapter'] . ':/' . $info['pathInformation'];
+				$config['tinyMCE'][$i]['joomlaExtButtons']['names'][$index] = $button;
+			}
+		}
+
 
 		// Save the config in JS store
 		$app->getDocument()->addScriptOptions('plg_editor_tinymce', $config);
@@ -336,7 +352,7 @@ class DPMedia extends CMSPlugin
 	{
 		$id = $data->catid ?? $form->getValue('catid');
 
-		$id = \is_array($id) ? (int) reset($id) : (int) $id;
+		$id = \is_array($id) ? (int)reset($id) : (int)$id;
 
 		$formField = $form->getField('catid');
 		if ($id === 0 && $formField instanceof FormField) {
@@ -347,7 +363,7 @@ class DPMedia extends CMSPlugin
 				$catOptions = $formField->__get('options');
 
 				if ($catOptions && !empty($catOptions[0]->value)) {
-					$id = (int) $catOptions[0]->value;
+					$id = (int)$catOptions[0]->value;
 				}
 			}
 		}

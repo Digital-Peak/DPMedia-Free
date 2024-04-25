@@ -78,7 +78,7 @@ class DpmediasubformField extends SubformField
 
 			// Get the directory
 			$directory = $field->directory;
-			if (!str_contains((string) $directory, 'context')) {
+			if (!str_contains((string)$directory, 'context')) {
 				// Banners has a hardcoded directory
 				if ($directory === 'banners') {
 					$directory = '';
@@ -112,14 +112,14 @@ class DpmediasubformField extends SubformField
 			}
 
 			// Transform the field when is accessible media
-			if (strtolower((string) $form->getFieldAttribute($field->fieldname, 'type', '', $field->group)) === 'accessiblemedia') {
+			if (strtolower((string)$form->getFieldAttribute($field->fieldname, 'type', '', $field->group)) === 'accessiblemedia') {
 				$form->setFieldAttribute($field->fieldname, 'type', 'dpmediaaccessible', $field->group);
 			}
 			$form->setFieldAttribute($field->fieldname, 'directory', $directory, $field->group);
 			$field->__set('directory', $directory);
 
 			// For direct media set also the asset
-			$args = html_entity_decode((string) $directory);
+			$args = html_entity_decode((string)$directory);
 			$form->setFieldAttribute($field->fieldname, 'asset_field', 'none', $field->group);
 			$form->setFieldAttribute($field->fieldname, 'asset_id', substr($args, strpos($args, '&') ?: 0), $field->group);
 		}

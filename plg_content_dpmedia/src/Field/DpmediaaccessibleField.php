@@ -29,7 +29,7 @@ class DpmediaaccessibleField extends AccessiblemediaField
 		$imageFile = $this->value->imagefile ?? ($this->value['imagefile'] ?? '');
 
 		// Encode the adapter
-		if (strpos((string) $imageFile, 'joomlaImage://')) {
+		if (strpos((string)$imageFile, 'joomlaImage://')) {
 			$imageFile = preg_replace_callback(
 				'/joomlaImage:\/\/([^\/]+)/',
 				static function (array $matches): string {
@@ -48,7 +48,7 @@ class DpmediaaccessibleField extends AccessiblemediaField
 					}
 					return 'joomlaImage://' . urlencode($adapter);
 				},
-				(string) $imageFile
+				(string)$imageFile
 			);
 
 			if (is_object($this->value)) {

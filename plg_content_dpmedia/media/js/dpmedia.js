@@ -29,6 +29,9 @@
 			return;
 		}
 		modal.dataset.url += info.pathInformation;
-		modal.dataset.iframe = modal.dataset.iframe.replace('&author', info.pathInformation + '&author');
+		modal.dataset.iframe = modal.dataset.iframe.replace(
+			'&author',
+			info.pathInformation + (modal.dataset.iframe.indexOf('&path') === -1 ? '&path=' + info.defaultAdapter + ':/' : '') + '&author'
+		);
 	});
 })();

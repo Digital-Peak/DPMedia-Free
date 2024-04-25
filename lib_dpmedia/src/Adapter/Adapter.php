@@ -18,7 +18,7 @@ use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
 
 /**
- * Read only adapter for Joomla 4 media manager.
+ * Read only base adapter class for Joomla media manager.
  */
 abstract class Adapter implements AdapterInterface
 {
@@ -142,7 +142,7 @@ abstract class Adapter implements AdapterInterface
 	{
 		// Append the root folder when in root
 		if ($path === '' || $path === '0' || $path === '/' || !$this->useLastPathSegment) {
-			$path = rtrim((string) $this->getConfig()->get('root_folder', '/'), '/') . '/' . $path;
+			$path = rtrim((string)$this->getConfig()->get('root_folder', '/'), '/') . '/' . $path;
 		}
 
 		// Replace last /
