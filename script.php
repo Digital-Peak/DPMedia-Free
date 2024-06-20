@@ -52,6 +52,15 @@ return new class () implements InstallerScriptInterface, DatabaseAwareInterface 
 			and name not in ('lib_dpmedia', 'plg_content_dpmedia', 'plg_installer_dpmedia', 'plg_user_dpmedia')");
 		}
 
+		if (version_compare($version, '1.14.0') == -1) {
+			$this->run(
+				"UPDATE `#__update_sites` SET location=replace(location,'&ext=extension.xml','') where location like 'https://joomla.digital-peak.com/index.php?option=com_ars&view=update&task=stream&format=xml&id=%'"
+			);
+			$this->run(
+				"UPDATE `#__update_sites` SET location=replace(location,'https://joomla.digital-peak.com/index.php?option=com_ars&view=update&task=stream&format=xml&id=','https://cdn.digital-peak.com/update/stream.php?id=') where location like 'https://joomla.digital-peak.com/index.php?option=com_ars&view=update&task=stream&format=xml&id=%'"
+			);
+		}
+
 		return true;
 	}
 

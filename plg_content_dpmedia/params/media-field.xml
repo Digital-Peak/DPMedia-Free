@@ -2,10 +2,6 @@
 <form>
 	<fields name="fieldparams">
 		<fieldset name="fieldparams">
-			<field name="directory" type="adapters" addfieldprefix="DigitalPeak\Library\DPMedia\Field"
-				label="PLG_CONTENT_DPMEDIA_ADAPTER_LABEL">
-				<option value=""></option>
-			</field>
 			<field name="types" type="list" default="images" multiple="true" layout="joomla.form.field.list-fancy-select"
 				label="PLG_CONTENT_DPMEDIA_TYPES_LABEL" description="PLG_CONTENT_DPMEDIA_TYPES_DESC">
 				<option value="images">PLG_CONTENT_DPMEDIA_TYPES_IMAGES</option>

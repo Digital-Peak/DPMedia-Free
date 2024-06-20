@@ -41,13 +41,12 @@ trait ResizeEventMediaTrait
 
 		$file = $event->getArgument('1');
 
-		/** @var Adapter|null $adapter */
 		$adapter = array_reduce(
 			$this->getAdapters(),
-			fn ($found, Adapter $adapter) => $this->getID() . '-' . $adapter->getAdapterName() == $file->adapter ? $adapter : $found
+			fn ($found, Adapter $adapter): Adapter|null => $this->getID() . '-' . $adapter->getAdapterName() == $file->adapter ? $adapter : $found
 		);
 
-		if (!$adapter || $adapter->getConfig()->get('force_resize', '0') != '1') {
+		if (!$adapter instanceof Adapter || $adapter->getConfig()->get('force_resize', '0') != '1') {
 			return;
 		}
 

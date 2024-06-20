@@ -148,7 +148,9 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface,
 			return [];
 		}
 
-		$className = 'DigitalPeak\Plugin\Filesystem\DP' . ucfirst($this->name) . '\Adapter\\' . ucfirst($this->name) . 'Adapter';
+		$name = (new \ReflectionClass($this))->getShortName();
+
+		$className = 'DigitalPeak\Plugin\Filesystem\\' . $name . '\Adapter\\' . $name . 'Adapter';
 		$className .= class_exists($className . 'Writable') ? 'Writable' : '';
 
 		$folders = $this->params->get('folders');

@@ -30,6 +30,36 @@ $files = [
 // From v1.8.0 to case 10026
 '/plugins/media-action/dpborder/media/icons/mobile-alt.svg',
 '/plugins/media-action/dpborder/media/icons/tablet-alt.svg',
+
+// From v1.13.0 to case 10792
+'/plugins/filesystem/dpsmugmug/src/Adapter/SmugmugAdapter.php',
+'/plugins/filesystem/dpsmugmug/src/Adapter/SmugmugAdapterWritable.php',
+'/plugins/filesystem/dpsmugmug/src/Extension/Smugmug.php',
+
+// From v1.13.0 to case 10874
+'/plugins/content/dpmedia/media',
+'/plugins/content/dpmedia/params/com_banners.xml',
+'/plugins/content/dpmedia/params/com_categories.xml',
+'/plugins/content/dpmedia/params/com_contact.xml',
+'/plugins/content/dpmedia/params/com_content.xml',
+'/plugins/content/dpmedia/params/com_dpcalendar.xml',
+'/plugins/content/dpmedia/params/com_newsfeeds.xml',
+'/plugins/content/dpmedia/params/com_tags.xml',
+'/plugins/content/dpmedia/params/com_users.xml',
+
+// From v1.13.0 to case 10767
+'/plugins/content/dpmedia/media',
+'/plugins/content/dpmedia/params/com_banners.xml',
+'/plugins/content/dpmedia/params/com_categories.xml',
+'/plugins/content/dpmedia/params/com_contact.xml',
+'/plugins/content/dpmedia/params/com_content.xml',
+'/plugins/content/dpmedia/params/com_dpcalendar.xml',
+'/plugins/content/dpmedia/params/com_newsfeeds.xml',
+'/plugins/content/dpmedia/params/com_tags.xml',
+'/plugins/content/dpmedia/params/com_users.xml',
+'/plugins/filesystem/dpsmugmug/src/Adapter/SmugmugAdapter.php',
+'/plugins/filesystem/dpsmugmug/src/Adapter/SmugmugAdapterWritable.php',
+'/plugins/filesystem/dpsmugmug/src/Extension/Smugmug.php',
 ];
 
 foreach ($files as $file) {

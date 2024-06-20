@@ -15,9 +15,6 @@ use Joomla\CMS\Form\Form;
 
 class DpmediaaccessibleField extends AccessiblemediaField
 {
-	public $value;
-	public $directory;
-	public $element;
 	public function setup(\SimpleXMLElement $element, $value, $group = null)
 	{
 		if ($value && is_string($value) && !str_starts_with($value, '{')) {
