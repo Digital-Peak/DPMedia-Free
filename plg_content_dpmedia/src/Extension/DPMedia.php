@@ -9,18 +9,26 @@ namespace DigitalPeak\Plugin\Content\DPMedia\Extension;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Event\Model\PrepareFormEvent;
 use Joomla\CMS\Extension\BootableExtensionInterface;
-use Joomla\CMS\Form\Form;
 use Joomla\CMS\Form\FormHelper;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\Component\Media\Administrator\Provider\ProviderManagerHelperTrait;
+use Joomla\Event\Event;
+use Joomla\Event\SubscriberInterface;
 use Psr\Container\ContainerInterface;
 
-class DPMedia extends CMSPlugin implements BootableExtensionInterface
+class DPMedia extends CMSPlugin implements BootableExtensionInterface, SubscriberInterface
 {
 	use ProviderManagerHelperTrait;
+
+	public static function getSubscribedEvents(): array
+	{
+		return ['onContentPrepareForm' => 'prepareForm'];
+	}
 
 	protected $autoloadLanguage = true;
 
@@ -30,8 +38,15 @@ class DPMedia extends CMSPlugin implements BootableExtensionInterface
 		PluginHelper::importPlugin('filesystem', 'dprestricted');
 	}
 
-	public function onContentPrepareForm(Form $form, mixed $data): void
+	public function prepareForm(Event $event): void
 	{
+		$form = $event->getArgument($event instanceof PrepareFormEvent ? 'form' : '0');
+		$data = $event->getArgument($event instanceof PrepareFormEvent ? 'data' : '1');
+
+		if ($this->params->get('fill_alt')) {
+			HTMLHelper::_('script', 'plg_content_dpmedia/dpmedia.min.js', ['relative' => true, 'version' => 'auto']);
+		}
+
 		// Compile the real context
 		$context = FieldsHelper::extract($form->getName());
 		if (count($context ?? []) < 2) {

@@ -157,7 +157,7 @@ abstract class Adapter implements AdapterInterface
 	/**
 	 * Returns a date object for the given date string respecting the global or user timezone.
 	 */
-	protected function getDate(string $date = null): Date
+	protected function getDate(?string $date = null): Date
 	{
 		$dateObj = Factory::getDate($date !== null && $date !== '' && $date !== '0' ? $date : '');
 

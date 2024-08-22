@@ -38,7 +38,7 @@ class MediaProvider implements ServiceProviderInterface
 
 		$container->set(
 			PluginInterface::class,
-			function (Container $container) {
+			function (Container $container): object {
 				$plugin = new $this->extensionClassName(
 					$container->get(DispatcherInterface::class),
 					$container->get(ClientInterface::class),

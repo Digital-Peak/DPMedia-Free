@@ -70,7 +70,7 @@ trait DownloadMediaTrait
 	 */
 	protected function generateThumb(\stdclass $file, Registry $config): string
 	{
-		if (!in_array(strtolower((string)$file->extension), $this->supportedThumbnailImageFormats)) {
+		if ($file->type !== 'file' || !in_array(strtolower((string)$file->extension), $this->supportedThumbnailImageFormats)) {
 			return '';
 		}
 
