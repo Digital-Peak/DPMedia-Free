@@ -7,7 +7,7 @@
 
 namespace DigitalPeak\Plugin\Content\DPMedia\Field;
 
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Field\AccessiblemediaField;
@@ -17,7 +17,7 @@ class DpmediaaccessibleField extends AccessiblemediaField
 {
 	public function setup(\SimpleXMLElement $element, $value, $group = null)
 	{
-		if ($value && is_string($value) && !str_starts_with($value, '{')) {
+		if ($value && \is_string($value) && !str_starts_with($value, '{')) {
 			$value = ['imagefile' => $value];
 		}
 
@@ -30,10 +30,8 @@ class DpmediaaccessibleField extends AccessiblemediaField
 			$imageFile = preg_replace_callback(
 				'/joomlaImage:\/\/([^\/]+)/',
 				static function (array $matches): string {
-					if ($matches === []) {
-						return '';
-					}
 					$adapter = $matches[1];
+
 					/**
 					 * There is a double encoding needed here for the front end, otherwise the media field is rendering &
 					 * characters on the front encoded which count as new arg as part of the route call.
@@ -43,17 +41,18 @@ class DpmediaaccessibleField extends AccessiblemediaField
 					if (Factory::getApplication()->isClient('site')) {
 						$adapter = urlencode($adapter);
 					}
+
 					return 'joomlaImage://' . urlencode($adapter);
 				},
 				(string)$imageFile
 			);
 
-			if (is_object($this->value)) {
+			if (\is_object($this->value)) {
 				// @phpstan-ignore-next-line
 				$this->value->imagefile = $imageFile;
 			}
 
-			if (is_array($this->value)) {
+			if (\is_array($this->value)) {
 				$this->value['imagefile'] = $imageFile;
 			}
 		}

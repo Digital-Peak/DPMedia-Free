@@ -53,8 +53,8 @@ trait DownloadMediaTrait
 			return $filePath;
 		}
 
-		if (!file_exists(dirname(JPATH_SITE . $filePath))) {
-			Folder::create(dirname(JPATH_SITE . $filePath));
+		if (!file_exists(\dirname(JPATH_SITE . $filePath))) {
+			Folder::create(\dirname(JPATH_SITE . $filePath));
 		}
 
 		file_put_contents(JPATH_SITE . $filePath, $this->getContent($file, $config));
@@ -70,7 +70,7 @@ trait DownloadMediaTrait
 	 */
 	protected function generateThumb(\stdclass $file, Registry $config): string
 	{
-		if ($file->type !== 'file' || !in_array(strtolower((string)$file->extension), $this->supportedThumbnailImageFormats)) {
+		if ($file->type !== 'file' || !\in_array(strtolower((string)$file->extension), $this->supportedThumbnailImageFormats)) {
 			return '';
 		}
 
@@ -114,9 +114,9 @@ trait DownloadMediaTrait
 		$file            = new \stdClass();
 		$file->extension = pathinfo($path, PATHINFO_EXTENSION);
 		$file->name      = basename($path);
-		$file->path      = dirname($path);
+		$file->path      = \dirname($path);
 
-		if (!in_array($file->extension, $this->supportedThumbnailImageFormats)) {
+		if (!\in_array($file->extension, $this->supportedThumbnailImageFormats)) {
 			return;
 		}
 
@@ -139,7 +139,7 @@ trait DownloadMediaTrait
 	protected function getMediaPath(\stdclass $file, Registry $config): string
 	{
 		$path = $config->get('local_media_path', '/images/dp' . $this->getName() . '/media') . '/';
-		$path .= dirname((string)$file->path) . '/';
+		$path .= \dirname((string)$file->path) . '/';
 		$path .= pathinfo((string)$file->name, PATHINFO_FILENAME);
 		$path .= '.' . $file->extension;
 

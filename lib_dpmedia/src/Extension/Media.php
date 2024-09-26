@@ -80,7 +80,7 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface,
 		$folders = $this->params->get('folders', new \stdClass());
 
 		// Folders can be an empty array when all cleared
-		if (is_array($folders)) {
+		if (\is_array($folders)) {
 			$folders = new \stdClass();
 		}
 
@@ -158,7 +158,7 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface,
 			return [];
 		}
 
-		if (is_string($folders)) {
+		if (\is_string($folders)) {
 			$folders = json_decode($folders);
 		}
 

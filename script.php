@@ -5,7 +5,7 @@
  * @license   https://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
  */
 
-defined('_JEXEC') or die();
+\defined('_JEXEC') or die();
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\InstallerAdapter;
@@ -72,13 +72,13 @@ return new class () implements InstallerScriptInterface, DatabaseAwareInterface 
 	public function preflight(string $type, InstallerAdapter $adapter): bool
 	{
 		if (version_compare(PHP_VERSION, $this->minimumPhp, '<')) {
-			Log::add(sprintf(Text::_('JLIB_INSTALLER_MINIMUM_PHP'), $this->minimumPhp), Log::WARNING, 'jerror');
+			Log::add(\sprintf(Text::_('JLIB_INSTALLER_MINIMUM_PHP'), $this->minimumPhp), Log::WARNING, 'jerror');
 
 			return false;
 		}
 
 		if (version_compare(JVERSION, $this->minimumJoomla, '<')) {
-			Log::add(sprintf(Text::_('JLIB_INSTALLER_MINIMUM_JOOMLA'), $this->minimumJoomla), Log::WARNING, 'jerror');
+			Log::add(\sprintf(Text::_('JLIB_INSTALLER_MINIMUM_JOOMLA'), $this->minimumJoomla), Log::WARNING, 'jerror');
 
 			return false;
 		}

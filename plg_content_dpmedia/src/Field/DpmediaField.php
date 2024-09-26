@@ -7,7 +7,7 @@
 
 namespace DigitalPeak\Plugin\Content\DPMedia\Field;
 
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
 use Joomla\CMS\Form\Field\MediaField;
 
@@ -15,15 +15,15 @@ class DpmediaField extends MediaField
 {
 	public function setup(\SimpleXMLElement $element, $value, $group = null)
 	{
-		if (is_string($value) && str_starts_with($value, '{')) {
+		if (\is_string($value) && str_starts_with($value, '{')) {
 			$value = json_decode($value);
 		}
 
-		if (is_object($value) && !empty($value->imagefile)) {
+		if (\is_object($value) && !empty($value->imagefile)) {
 			$value = $value->imagefile;
 		}
 
-		if (!is_string($value)) {
+		if (!\is_string($value)) {
 			$value = '';
 		}
 

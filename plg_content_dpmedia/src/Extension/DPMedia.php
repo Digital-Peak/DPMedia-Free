@@ -7,7 +7,7 @@
 
 namespace DigitalPeak\Plugin\Content\DPMedia\Extension;
 
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
 use Joomla\CMS\Event\Model\PrepareFormEvent;
 use Joomla\CMS\Extension\BootableExtensionInterface;
@@ -49,7 +49,7 @@ class DPMedia extends CMSPlugin implements BootableExtensionInterface, Subscribe
 
 		// Compile the real context
 		$context = FieldsHelper::extract($form->getName());
-		if (count($context ?? []) < 2) {
+		if (\count($context ?? []) < 2) {
 			return;
 		}
 
@@ -62,7 +62,7 @@ class DPMedia extends CMSPlugin implements BootableExtensionInterface, Subscribe
 		}
 
 		// Get the custom fields
-		$customFields = FieldsHelper::getFields($context, is_array($data) || $data instanceof \stdClass ? $data : null);
+		$customFields = FieldsHelper::getFields($context, \is_array($data) || $data instanceof \stdClass ? $data : null);
 
 		// Loop over the field
 		foreach ($form->getFieldset() as $field) {
@@ -72,7 +72,7 @@ class DPMedia extends CMSPlugin implements BootableExtensionInterface, Subscribe
 				FormHelper::addFieldPrefix('DigitalPeak\Plugin\Content\DPMedia\Field');
 
 				// Transform the field into a dp one
-				$name = substr((string)$field->name, strpos((string)$field->name, $field->group . '][') + strlen((string)$field->group));
+				$name = substr((string)$field->name, strpos((string)$field->name, $field->group . '][') + \strlen((string)$field->group));
 				$name = trim($name, '[]');
 				$form->setFieldAttribute($name, 'type', 'dpmediasubform', $field->group);
 				$form->setFieldAttribute($name, 'context', $context, $field->group);

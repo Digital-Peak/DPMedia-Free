@@ -27,11 +27,11 @@ trait ResizeMediaTrait
 	protected function resizeImage(mixed $path, $width, $height, $quality = 80, $aspectRation = 1): void
 	{
 		// Get the extension
-		$extension = is_object($path) ? $path->extension : pathinfo($path, PATHINFO_EXTENSION);
+		$extension = \is_object($path) ? $path->extension : pathinfo($path, PATHINFO_EXTENSION);
 		$extension = strtolower($extension);
 
 		// Only resize images we can actually handle
-		if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
+		if (!\in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
 			return;
 		}
 
@@ -85,7 +85,7 @@ trait ResizeMediaTrait
 			$quality = (int)min(9, $quality / 10);
 		}
 
-		if (!is_object($path)) {
+		if (!\is_object($path)) {
 			$imgObject->toFile($path, $type, ['quality' => $quality]);
 			return;
 		}
