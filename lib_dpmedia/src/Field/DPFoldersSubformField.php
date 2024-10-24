@@ -20,7 +20,7 @@ class DPFoldersSubformField extends SubformField
 
 	protected function getInput(): string
 	{
-		HTMLHelper::_('script', 'plg_filesystem_dp' . $this->pluginName . '/dptoken.min.js', ['relative' => true, 'version' => 'auto']);
+		HTMLHelper::_('script', 'plg_filesystem_dp' . $this->pluginName . '/dptoken.min.js', ['relative' => true, 'version' => 'auto'], ['defer' => true, 'type' => 'module']);
 
 		$html = parent::getInput();
 

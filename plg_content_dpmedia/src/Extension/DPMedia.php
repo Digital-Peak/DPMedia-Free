@@ -44,7 +44,7 @@ class DPMedia extends CMSPlugin implements BootableExtensionInterface, Subscribe
 		$data = $event->getArgument($event instanceof PrepareFormEvent ? 'data' : '1');
 
 		if ($this->params->get('fill_alt')) {
-			HTMLHelper::_('script', 'plg_content_dpmedia/dpmedia.min.js', ['relative' => true, 'version' => 'auto']);
+			HTMLHelper::_('script', 'plg_content_dpmedia/dpmedia.min.js', ['relative' => true, 'version' => 'auto'], ['defer' => true, 'type' => 'module']);
 		}
 
 		// Compile the real context
