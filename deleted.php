@@ -130,6 +130,24 @@ $files = [
 '/plugins/media-action/dptext/media/css/dptext.css.map',
 '/plugins/media-action/dptext/media/js/dptext.js',
 '/plugins/media-action/dptext/media/js/dptext.js.map',
+
+// From v1.15.2 to case 11203
+'/media/plg_media-action/dpconvert/codecs/avif.min.js',
+'/media/plg_media-action/dpconvert/codecs/jxl.min.js',
+'/media/plg_media-action/dpconvert/codecs/mozjpeg.min.js',
+'/media/plg_media-action/dpconvert/codecs/squoosh_oxipng.min.js',
+'/media/plg_media-action/dpconvert/codecs/squoosh_oxipng_bg.wasm',
+'/media/plg_media-action/dpconvert/codecs/webp_enc.min.js',
+'/media/plg_media-action/dpconvert/codecs/wp2_enc.min.js',
+
+// From v1.15.2 to case 11234
+'/media/plg_media-action/dpconvert/codecs/avif.min.js',
+'/media/plg_media-action/dpconvert/codecs/jxl.min.js',
+'/media/plg_media-action/dpconvert/codecs/mozjpeg.min.js',
+'/media/plg_media-action/dpconvert/codecs/squoosh_oxipng.min.js',
+'/media/plg_media-action/dpconvert/codecs/squoosh_oxipng_bg.wasm',
+'/media/plg_media-action/dpconvert/codecs/webp_enc.min.js',
+'/media/plg_media-action/dpconvert/codecs/wp2_enc.min.js',
 ];
 
 foreach ($files as $file) {

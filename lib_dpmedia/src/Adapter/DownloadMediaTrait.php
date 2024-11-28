@@ -22,12 +22,12 @@ trait DownloadMediaTrait
 	/**
 	 * The supported formats to generate thumbnails from.
 	 */
-	private array $supportedThumbnailImageFormats = ['jpg', 'jpeg', 'png', 'tiff', 'tif', 'gif', 'bmp'];
+	private array $supportedThumbnailImageFormats = ['jpg', 'jpeg', 'png', 'tiff', 'tif', 'gif', 'bmp', 'webp'];
 
 	/**
 	 * Returns the content of the file with the given config.
 	 */
-	abstract protected function getContent(\stdclass $file, Registry $config): string;
+	abstract protected function getContent(\stdClass $file, Registry $config): string;
 
 	/**
 	* Returns the name.
