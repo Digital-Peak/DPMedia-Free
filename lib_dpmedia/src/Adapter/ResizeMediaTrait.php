@@ -31,7 +31,7 @@ trait ResizeMediaTrait
 		$extension = strtolower($extension);
 
 		// Only resize images we can actually handle
-		if (!\in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
+		if (!\in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
 			return;
 		}
 

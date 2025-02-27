@@ -19,16 +19,11 @@ trait LocalMediaTrait
 
 	/**
 	 * Fetch the url for the given path.
-	 *
-	 *
-	 * @return string
 	 */
 	abstract protected function fetchUrl(string $path): string;
 
 	/**
 	 * Returns the config.
-	 *
-	 * @return Registry
 	 */
 	abstract protected function getConfig(): Registry;
 

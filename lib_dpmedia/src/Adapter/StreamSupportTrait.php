@@ -15,7 +15,6 @@ trait StreamSupportTrait
 	/**
 	 * Creates a resource for the given path and content.
 	 *
-	 *
 	 * @return resource
 	 */
 	public function createResource(string $path, string $content)

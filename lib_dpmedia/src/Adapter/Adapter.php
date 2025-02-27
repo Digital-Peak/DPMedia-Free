@@ -57,7 +57,7 @@ abstract class Adapter implements AdapterInterface
 	 */
 	protected function fetchUrl(string $path): string
 	{
-		return $this->getFile($path)->url;
+		return $this->getFile($path)->url ?? '';
 	}
 
 	public function getFile(string $path = '/'): \stdClass

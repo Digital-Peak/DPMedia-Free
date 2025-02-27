@@ -94,7 +94,7 @@ trait DownloadMediaTrait
 
 		// To not bloat, only a certain amount of thumbnails are generated
 		static $thumbCount = 0;
-		if (($thumb === null || $thumb === '' || $thumb === '0') && $thumbCount < $config->get('thumb_count', 10)) {
+		if (($thumb === null || $thumb === '' || $thumb === '0') && $thumbCount < $config->get('local_image_thumb_count', 10)) {
 			$thumb = rtrim(Uri::root(), '/') . $this->download($file, $thumbConfig);
 			$thumbCount++;
 		}
@@ -114,7 +114,7 @@ trait DownloadMediaTrait
 		$file            = new \stdClass();
 		$file->extension = pathinfo($path, PATHINFO_EXTENSION);
 		$file->name      = basename($path);
-		$file->path      = \dirname($path);
+		$file->path      = $path;
 
 		if (!\in_array($file->extension, $this->supportedThumbnailImageFormats)) {
 			return;

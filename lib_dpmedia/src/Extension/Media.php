@@ -138,9 +138,6 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface,
 		return $app->getLanguage()->_('PLG_FILESYSTEM_DP' . strtoupper($this->name) . '_DEFAULT_NAME');
 	}
 
-	/**
-	 * @return mixed[]
-	 */
 	public function getAdapters(): array
 	{
 		$app = $this->getApplication();

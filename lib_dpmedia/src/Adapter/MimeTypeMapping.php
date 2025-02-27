@@ -2989,9 +2989,6 @@ class MimeTypeMapping
 
 	/**
 	 * Returns the mime type for the given extension.
-	 *
-	 *
-	 * @return string
 	 */
 	public function getMimetype(string $extension): string
 	{

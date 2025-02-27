@@ -2,12 +2,12 @@
 <extension type="library" method="upgrade">
 	<name>lib_dpmedia</name>
 	<author>Digital Peak</author>
-	<creationDate>2025-01-23</creationDate>
+	<creationDate>2025-02-27</creationDate>
 	<copyright>(C) 2021 Digital Peak GmbH</copyright>
 	<license>https://www.gnu.org/licenses/gpl-3.0.html</license>
 	<authorEmail>info@digital-peak.com</authorEmail>
 	<authorUrl>joomla.digital-peak.com</authorUrl>
-	<version>1.15.5</version>
+	<version>1.16.0</version>
 	<libraryname>lib_dpmedia</libraryname>
 	<namespace path="src">DigitalPeak\Library\DPMedia</namespace>
 	<files>

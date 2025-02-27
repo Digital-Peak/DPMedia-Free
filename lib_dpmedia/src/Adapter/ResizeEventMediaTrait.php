@@ -7,6 +7,7 @@
 
 namespace DigitalPeak\Library\DPMedia\Adapter;
 
+use Joomla\Component\Media\Administrator\Adapter\AdapterInterface;
 use Joomla\Event\Event;
 
 /**
@@ -18,15 +19,11 @@ trait ResizeEventMediaTrait
 
 	/**
 	 * Returns the adapters to resize on.
-	 *
-	 * @return array
 	 */
 	abstract public function getAdapters(): array;
 
 	/**
 	 * Returns the id of the current instance.
-	 *
-	 * @return string
 	 */
 	abstract public function getID();
 
@@ -43,7 +40,7 @@ trait ResizeEventMediaTrait
 
 		$adapter = array_reduce(
 			$this->getAdapters(),
-			fn ($found, Adapter $adapter): Adapter|null => $this->getID() . '-' . $adapter->getAdapterName() == $file->adapter ? $adapter : $found
+			fn ($found, AdapterInterface $adapter): AdapterInterface|null => $this->getID() . '-' . $adapter->getAdapterName() == $file->adapter ? $adapter : $found
 		);
 
 		if (!$adapter instanceof Adapter || $adapter->getConfig()->get('force_resize', '0') != '1') {
