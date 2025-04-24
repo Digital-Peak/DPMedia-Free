@@ -7,14 +7,40 @@
 
 namespace DigitalPeak\Plugin\Installer\DPMedia\Extension;
 
-use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Application\CMSApplicationInterface;
+use Joomla\CMS\Event\Installer\BeforeUpdateSiteDownloadEvent;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseAwareTrait;
 
 class DPMedia extends CMSPlugin
 {
-	/** @var CMSApplication $app */
-	protected $app;
+	use DatabaseAwareTrait;
+
+	public function onInstallerBeforeUpdateSiteDownload(BeforeUpdateSiteDownloadEvent $event): void
+	{
+		$url = $event->getUrl();
+		if ($url !== '' || !str_contains($url, '&project=dpmedia')) {
+			return;
+		}
+
+		$uri = Uri::getInstance($url);
+		$uri->setVar('j', JVERSION);
+		$uri->setVar('p', phpversion());
+		$uri->setVar('m', $this->getDatabase()->getVersion());
+
+		$path = JPATH_LIBRARIES . '/lib_dpmedia/lib_dpmedia.xml';
+		if (file_exists($path)) {
+			$manifest = simplexml_load_file($path);
+			$uri->setVar('v', $manifest instanceof \SimpleXMLElement ? (string)$manifest->version : '');
+		}
+
+		if ($uri->getVar('v') === 'DP_DEPLOY_VERSION') {
+			return;
+		}
+
+		$event->updateUrl($uri->toString());
+	}
 
 	public function onInstallerBeforePackageDownload(string &$url, array &$headers): void
 	{
@@ -22,7 +48,12 @@ class DPMedia extends CMSPlugin
 			return;
 		}
 
-		$model = $this->app->bootComponent('com_installer')->getMVCFactory()->createModel('Updatesites', 'Administrator', ['ignore_request' => true]);
+		$app = $this->getApplication();
+		if (!$app instanceof CMSApplicationInterface) {
+			return;
+		}
+
+		$model = $app->bootComponent('com_installer')->getMVCFactory()->createModel('Updatesites', 'Administrator', ['ignore_request' => true]);
 		$model->setState('filter.search', 'DPMedia Core');
 		$model->setState('filter.enabled', 1);
 		$model->setState('list.start', 0);
