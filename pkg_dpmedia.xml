@@ -18,6 +18,6 @@
 	</files>
 	<scriptfile>script.php</scriptfile>
 	<updateservers>
-		<server type="extension" priority="1" name="DPMedia Free"><![CDATA[https://cdn.digital-peak.com/update/stream.php?id=14&project=dpmedia]]></server>
+		<server type="extension" priority="1" name="DPMedia Free"><![CDATA[https://cdn.digital-peak.com/update/stream.php?id=14]]></server>
 	</updateservers>
 </extension>

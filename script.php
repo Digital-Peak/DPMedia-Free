@@ -61,10 +61,6 @@ return new class () implements InstallerScriptInterface, DatabaseAwareInterface 
 			);
 		}
 
-		if (version_compare($version, '1.16.1') == -1) {
-			$this->run("UPDATE `#__update_sites` SET location = CONCAT(location, '&project=dpmedia') WHERE name LIKE '%dpmedia%' AND location NOT LIKE '%&project=dpmedia%'");
-		}
-
 		return true;
 	}
 
