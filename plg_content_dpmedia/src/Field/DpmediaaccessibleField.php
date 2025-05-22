@@ -9,6 +9,7 @@ namespace DigitalPeak\Plugin\Content\DPMedia\Field;
 
 \defined('_JEXEC') or die;
 
+use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Field\AccessiblemediaField;
 use Joomla\CMS\Form\Form;
@@ -38,7 +39,7 @@ class DpmediaaccessibleField extends AccessiblemediaField
 					 * https://github.com/joomla/joomla-cms/blob/4.4-dev/layouts/joomla/form/field/media.php#L115
 					 * `$url = Route::_($url);`
 					 */
-					if (Factory::getApplication()->isClient('site')) {
+					if (Factory::getApplication() instanceof SiteApplication) {
 						$adapter = urlencode($adapter);
 					}
 
