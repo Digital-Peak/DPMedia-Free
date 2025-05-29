@@ -7,6 +7,7 @@
 
 use DigitalPeak\Plugin\Installer\DPMedia\Extension\DPMedia;
 use Joomla\CMS\Extension\PluginInterface;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
@@ -24,6 +25,7 @@ return new class () implements ServiceProviderInterface {
 					$dispatcher,
 					(array)PluginHelper::getPlugin('installer', 'dpmedia')
 				);
+				$plugin->setApplication(Factory::getApplication());
 				$plugin->setDatabase($container->get(DatabaseInterface::class));
 
 				return $plugin;
