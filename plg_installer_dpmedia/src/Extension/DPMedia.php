@@ -20,23 +20,25 @@ class DPMedia extends CMSPlugin
 	public function onInstallerBeforeUpdateSiteDownload(BeforeUpdateSiteDownloadEvent $event): void
 	{
 		$url = $event->getUrl();
-		if ($url !== '' || !str_contains($url, 'digital-peak.com')) {
+		if (!str_contains($url, 'digital-peak.com')) {
 			return;
 		}
 
-		$query = $this->getDatabase()->getQuery(true);
+		$db    = $this->getDatabase();
+		$query = $db->getQuery(true);
 		$query->select('name')->from('#__update_sites');
 		$query->where('location = :location')->bind(':location', $url);
 
-		$this->getDatabase()->setQuery($query);
-		if (!str_contains((string)$this->getDatabase()->loadResult(), 'DPMedia')) {
+		$db->setQuery($query);
+		if (!str_contains((string)$db->loadResult(), 'DPMedia')) {
 			return;
 		}
 
+		// Set the versions for smaller downloads
 		$uri = Uri::getInstance($url);
 		$uri->setVar('j', JVERSION);
 		$uri->setVar('p', phpversion());
-		$uri->setVar('m', $this->getDatabase()->getVersion());
+		$uri->setVar('m', $db->getVersion());
 
 		$path = JPATH_LIBRARIES . '/lib_dpmedia/lib_dpmedia.xml';
 		if (file_exists($path)) {
