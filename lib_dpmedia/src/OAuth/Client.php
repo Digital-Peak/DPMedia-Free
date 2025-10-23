@@ -53,12 +53,12 @@ class Client
 		$parameters['oauth_signature'] = rawurlencode(base64_encode(hash_hmac('sha1', $baseStr, $key, true)));
 
 		// Compile the auth header
-		$authParameters = array_filter($parameters, static fn ($k): bool => str_starts_with($k, 'oauth'), ARRAY_FILTER_USE_KEY);
+		$authParameters = array_filter($parameters, static fn ($k): bool => str_starts_with((string)$k, 'oauth'), ARRAY_FILTER_USE_KEY);
 		uksort($authParameters, 'strcmp');
 		$headers[] = 'Authorization: OAuth ' . ArrayHelper::toString($authParameters, '=', ',');
 
 		// Extract the parameters for the url
-		$urlParameters = array_filter($parameters, static fn ($k): bool => !str_starts_with($k, 'oauth'), ARRAY_FILTER_USE_KEY);
+		$urlParameters = array_filter($parameters, static fn ($k): bool => !str_starts_with((string)$k, 'oauth'), ARRAY_FILTER_USE_KEY);
 		$urlParameters = array_map(static fn ($k, $p): string => $k . '=' . rawurlencode((string)$p), array_keys($urlParameters), array_values($urlParameters));
 
 		// Make the request

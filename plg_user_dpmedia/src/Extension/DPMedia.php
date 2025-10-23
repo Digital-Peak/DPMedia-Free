@@ -23,6 +23,7 @@ class DPMedia extends CMSPlugin implements BootableExtensionInterface
 			return;
 		}
 
+		// @phpstan-ignore-next-line
 		$app->bootPlugin('dpmedia', 'content')->registerListeners();
 	}
 }

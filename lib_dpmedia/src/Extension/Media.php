@@ -86,7 +86,7 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface,
 
 		$params = [];
 		foreach ($_COOKIE as $key => $value) {
-			if (!str_starts_with($key, 'dp_')) {
+			if (!str_starts_with((string)$key, 'dp_')) {
 				continue;
 			}
 			$params[str_replace('dp_', '', $key)] = $value;
