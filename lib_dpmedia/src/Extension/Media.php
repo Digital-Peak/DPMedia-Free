@@ -41,6 +41,7 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface,
 	}
 
 	protected $autoloadLanguage = true;
+
 	protected string $name;
 
 	public function __construct(

@@ -18,7 +18,8 @@ use Joomla\Database\DatabaseAwareTrait;
 return new class () implements InstallerScriptInterface, DatabaseAwareInterface {
 	use DatabaseAwareTrait;
 
-	private string $minimumPhp    = '8.1.0';
+	private string $minimumPhp = '8.1.0';
+
 	private string $minimumJoomla = '4.4.0';
 
 	public function install(InstallerAdapter $adapter): bool
@@ -42,17 +43,17 @@ return new class () implements InstallerScriptInterface, DatabaseAwareInterface 
 			$version  = $manifest instanceof SimpleXMLElement ? (string)$manifest->version : null;
 		}
 
-		if ($version === null || $version === '' || $version === '0' || $version === 'DP_DEPLOY_VERSION') {
+		if (\in_array($version, [null, '', '0', 'DP_DEPLOY_VERSION'], true)) {
 			return true;
 		}
 
-		if (version_compare($version, '1.10.0') == -1) {
+		if (version_compare($version, '1.10.0') === -1) {
 			$this->run("update #__extensions set package_id = 0
 			where package_id = (select * from (select extension_id from #__extensions where element ='pkg_dpmedia') as e)
 			and name not in ('lib_dpmedia', 'plg_content_dpmedia', 'plg_installer_dpmedia', 'plg_user_dpmedia')");
 		}
 
-		if (version_compare($version, '1.14.0') == -1) {
+		if (version_compare($version, '1.14.0') === -1) {
 			$this->run(
 				"UPDATE `#__update_sites` SET location=replace(location,'&ext=extension.xml','') where location like 'https://joomla.digital-peak.com/index.php?option=com_ars&view=update&task=stream&format=xml&id=%'"
 			);

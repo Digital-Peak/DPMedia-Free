@@ -94,12 +94,12 @@ trait DownloadMediaTrait
 
 		// To not bloat, only a certain amount of thumbnails are generated
 		static $thumbCount = 0;
-		if (($thumb === null || $thumb === '' || $thumb === '0') && $thumbCount < $config->get('local_image_thumb_count', 10)) {
+		if ((\in_array($thumb, [null, '', '0'], true)) && $thumbCount < $config->get('local_image_thumb_count', 10)) {
 			$thumb = rtrim(Uri::root(), '/') . $this->download($file, $thumbConfig);
 			$thumbCount++;
 		}
 
-		if ($thumb === null || $thumb === '' || $thumb === '0') {
+		if (\in_array($thumb, [null, '', '0'], true)) {
 			return rtrim(Uri::root(), '/') . '/media/lib_dpmedia/images/default.jpg';
 		}
 

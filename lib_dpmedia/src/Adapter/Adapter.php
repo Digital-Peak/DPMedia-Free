@@ -23,6 +23,7 @@ use Joomla\Registry\Registry;
 abstract class Adapter implements AdapterInterface
 {
 	protected string $name;
+
 	protected bool $useLastPathSegment = true;
 
 	public function __construct(
@@ -139,7 +140,7 @@ abstract class Adapter implements AdapterInterface
 	protected function getPath(string $path): string
 	{
 		// Append the root folder when in root
-		if ($path === '' || $path === '0' || $path === '/' || !$this->useLastPathSegment) {
+		if (\in_array($path, ['', '0', '/'], true) || !$this->useLastPathSegment) {
 			$path = rtrim((string)$this->getConfig()->get('root_folder', '/'), '/') . '/' . $path;
 		}
 
@@ -157,7 +158,7 @@ abstract class Adapter implements AdapterInterface
 	 */
 	protected function getDate(?string $date = null): Date
 	{
-		$dateObj = Factory::getDate($date !== null && $date !== '' && $date !== '0' ? $date : '');
+		$dateObj = Factory::getDate(\in_array($date, [null, '', '0'], true) ? '' : $date);
 
 		$timezone = $this->app->get('offset');
 		$user     = $this->app->getIdentity();

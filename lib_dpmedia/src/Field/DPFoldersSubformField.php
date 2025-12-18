@@ -16,6 +16,7 @@ use Joomla\CMS\Uri\Uri;
 class DPFoldersSubformField extends SubformField
 {
 	protected $type = 'Dpfolders';
+
 	protected string $pluginName;
 
 	protected function getInput(): string

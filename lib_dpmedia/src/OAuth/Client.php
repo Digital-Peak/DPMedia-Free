@@ -36,7 +36,7 @@ class Client
 			'oauth_signature_method' => 'HMAC-SHA1',
 			'oauth_version'          => '1.0'
 		]);
-		uksort($parameters, 'strcmp');
+		uksort($parameters, strcmp(...));
 
 		// The key to sign
 		$key = $parameters['oauth_consumer_secret'] . '&' . $parameters['oauth_token_secret'];
@@ -54,7 +54,7 @@ class Client
 
 		// Compile the auth header
 		$authParameters = array_filter($parameters, static fn ($k): bool => str_starts_with((string)$k, 'oauth'), ARRAY_FILTER_USE_KEY);
-		uksort($authParameters, 'strcmp');
+		uksort($authParameters, strcmp(...));
 		$headers[] = 'Authorization: OAuth ' . ArrayHelper::toString($authParameters, '=', ',');
 
 		// Extract the parameters for the url
