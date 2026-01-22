@@ -99,6 +99,8 @@ return new class () implements InstallerScriptInterface, DatabaseAwareInterface 
 
 		// Make sure the installer plugin is enabled
 		$this->run("update `#__extensions` set enabled = 1 where name = 'plg_installer_dpmedia'");
+		// Ensure DPMedia update sites are enabled
+		$this->run("update `#__update_sites` set enabled = 1 where name like '%DPMedia%'");
 
 		return true;
 	}
