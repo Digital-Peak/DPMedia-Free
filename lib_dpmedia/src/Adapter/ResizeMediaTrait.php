@@ -47,11 +47,6 @@ trait ResizeMediaTrait
 		$imageWidth  = $imgObject->getWidth();
 		$imageHeight = $imgObject->getHeight();
 
-		// Do not enlarge
-		if ($width > $imageWidth && $height > $imageHeight) {
-			return;
-		}
-
 		// Modify the new dimensions when the aspect ratio should be kept
 		if ($aspectRation == 1) {
 			// When there is a width and the width of the image is bigger, reset the height

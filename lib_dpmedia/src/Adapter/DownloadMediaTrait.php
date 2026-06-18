@@ -25,14 +25,14 @@ trait DownloadMediaTrait
 	private array $supportedThumbnailImageFormats = ['jpg', 'jpeg', 'png', 'tiff', 'tif', 'gif', 'bmp', 'webp'];
 
 	/**
+	* Returns the name.
+	*/
+	abstract public function getName(): string;
+
+	/**
 	 * Returns the content of the file with the given config.
 	 */
 	abstract protected function getContent(\stdClass $file, Registry $config): string;
-
-	/**
-	* Returns the name.
-	*/
-	abstract protected function getName(): string;
 
 	/**
 	 * Downloads the given file to the local filesystem. The path relative to root is returned.
