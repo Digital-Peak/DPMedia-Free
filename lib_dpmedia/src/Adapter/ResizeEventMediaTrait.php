@@ -12,6 +12,8 @@ use Joomla\Event\Event;
 
 /**
  * Media resize support.
+ *
+ * @phpstan-ignore-next-line trait.unused
  */
 trait ResizeEventMediaTrait
 {

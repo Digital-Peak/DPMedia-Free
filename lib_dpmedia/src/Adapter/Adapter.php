@@ -13,6 +13,7 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Component\Media\Administrator\Adapter\AdapterInterface;
+use Joomla\Component\Media\Administrator\Exception\InvalidPathException;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
@@ -150,7 +151,41 @@ abstract class Adapter implements AdapterInterface
 		// Normalize
 		$path = $path !== '' && $path !== '0' ? Path::clean($path, '/') : $path;
 
+		// Resolve "." and ".." segments and reject any path trying to climb above the adapter root
+		if ($path !== '' && $path !== '0') {
+			return $this->resolvePath($path);
+		}
+
 		return $path;
+	}
+
+	/**
+	 * Resolves "." and ".." segments in a "/" separated virtual path, throwing when the path
+	 * tries to climb above its own root.
+	 */
+	protected function resolvePath(string $path): string
+	{
+		$absolute = str_starts_with($path, '/');
+		$parts    = [];
+
+		foreach (explode('/', $path) as $segment) {
+			if ($segment === '' || $segment === '.') {
+				continue;
+			}
+
+			if ($segment === '..') {
+				if ($parts === []) {
+					throw new InvalidPathException('Path is outside of the defined root');
+				}
+
+				array_pop($parts);
+				continue;
+			}
+
+			$parts[] = $segment;
+		}
+
+		return ($absolute ? '/' : '') . implode('/', $parts);
 	}
 
 	/**

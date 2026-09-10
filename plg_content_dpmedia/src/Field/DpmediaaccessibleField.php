@@ -48,8 +48,7 @@ class DpmediaaccessibleField extends AccessiblemediaField
 				(string)$imageFile
 			);
 
-			if (\is_object($this->value)) {
-				// @phpstan-ignore-next-line
+			if ($this->value instanceof \stdClass) {
 				$this->value->imagefile = $imageFile;
 			}
 

@@ -29,7 +29,6 @@ return new class () implements InstallerScriptInterface, DatabaseAwareInterface 
 
 	public function update(InstallerAdapter $adapter): bool
 	{
-
 		$file = $adapter->getParent()->getPath('source') . '/deleted.php';
 		if (file_exists($file)) {
 			require $file;

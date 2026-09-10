@@ -30,6 +30,12 @@ trait DownloadMediaTrait
 	abstract public function getName(): string;
 
 	/**
+	 * Resolves "." and ".." segments in a "/" separated virtual path, throwing when the path
+	 * tries to climb above its own root.
+	 */
+	abstract protected function resolvePath(string $path): string;
+
+	/**
 	 * Returns the content of the file with the given config.
 	 */
 	abstract protected function getContent(\stdClass $file, Registry $config): string;
@@ -138,11 +144,13 @@ trait DownloadMediaTrait
 	 */
 	protected function getMediaPath(\stdclass $file, Registry $config): string
 	{
-		$path = $config->get('local_media_path', '/images/dp' . $this->getName() . '/media') . '/';
-		$path .= \dirname((string)$file->path) . '/';
+		$path = \dirname((string)$file->path) . '/';
 		$path .= pathinfo((string)$file->name, PATHINFO_FILENAME);
 		$path .= '.' . $file->extension;
 
-		return Path::clean($path, '/');
+		// Resolve "." and ".." to make sure a remote-reported path can't escape the local cache root below
+		$path = $this->resolvePath(Path::clean($path, '/'));
+
+		return Path::clean($config->get('local_media_path', '/images/dp' . $this->getName() . '/media') . '/' . $path, '/');
 	}
 }

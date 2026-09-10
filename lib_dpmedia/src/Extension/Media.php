@@ -72,11 +72,27 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface,
 
 	public function storeRefreshToken(OAuthCallbackEvent $event): void
 	{
+		$app = $this->getApplication();
+		if (!$app instanceof CMSWebApplicationInterface) {
+			return;
+		}
+
+		// OAuth2 based providers complete the flow with a "code" parameter. Make sure this callback
+		// was actually initiated by the current browser and not forged/replayed by a third party.
+		if ($app->getInput()->getString('code', '') !== '') {
+			$state = $app->getInput()->getString('state', '');
+			if ($state === '' || !hash_equals((string)($_COOKIE['dp_state'] ?? ''), $state)) {
+				setcookie('dp_state', '', ['expires' => time() - 3600]);
+				return;
+			}
+		}
+
 		$uri = isset($_SERVER['HTTP_HOST']) ? Uri::getInstance() : Uri::getInstance('http://localhost');
 		if (filter_var($uri->getHost(), FILTER_VALIDATE_IP)) {
 			$uri->setHost('localhost');
 		}
-		$uri = $uri->toString(['scheme', 'host', 'port', 'path']) . '?option=com_media&task=plugin.oauthcallback&plugin=dp' . $this->name;
+		$currentHost = $uri->getHost();
+		$uri         = $uri->toString(['scheme', 'host', 'port', 'path']) . '?option=com_media&task=plugin.oauthcallback&plugin=dp' . $this->name;
 
 		$folders = $this->params->get('folders', new \stdClass());
 
@@ -111,17 +127,42 @@ class Media extends CMSPlugin implements SubscriberInterface, ProviderInterface,
 		$this->getDatabase()->setQuery($query);
 		$this->getDatabase()->execute();
 
-		$url = $_COOKIE['dp_url'];
+		$url = $this->getSafeRedirectUrl((string)($_COOKIE['dp_url'] ?? ''), $currentHost);
 
-		// Clear cookies
+		// Clear cookies (dp_url and dp_state are cleared here too since they match the "dp_" prefix)
 		foreach (array_keys($params) as $key) {
 			setcookie('dp_' . $key, '', ['expires' => time() - 3600]);
 		}
 
-		$app = $this->getApplication();
-		if ($app instanceof CMSWebApplicationInterface) {
-			$app->redirect($url);
+		$app->redirect($url);
+	}
+
+	/**
+	 * Returns the given url when it is relative or points to the current host, a safe default otherwise.
+	 * Used to avoid an open redirect through the "dp_url" cookie set before the OAuth flow starts.
+	 */
+	private function getSafeRedirectUrl(string $url, string $currentHost): string
+	{
+		$default = 'index.php?option=com_media';
+
+		if ($url === '') {
+			return $default;
 		}
+
+		$parts = parse_url($url);
+		if ($parts === false) {
+			return $default;
+		}
+
+		if (isset($parts['host']) && strcasecmp($parts['host'], $currentHost) !== 0) {
+			return $default;
+		}
+
+		if (isset($parts['scheme']) && !\in_array(strtolower($parts['scheme']), ['http', 'https'], true)) {
+			return $default;
+		}
+
+		return $url;
 	}
 
 	public function getID()
