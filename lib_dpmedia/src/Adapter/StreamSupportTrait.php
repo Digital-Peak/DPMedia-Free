@@ -24,6 +24,13 @@ trait StreamSupportTrait
 			'r'
 		);
 
+		// Handle can be false when allow_url_fopen is off, create a tmp one which will be deleted when request ends
+		if ($handle === false) {
+			$handle = tmpfile();
+			fwrite($handle, $content);
+			rewind($handle);
+		}
+
 		if ($handle === false) {
 			throw new \Exception('Can not open file!');
 		}
