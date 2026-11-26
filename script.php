@@ -20,7 +20,7 @@ return new class () implements InstallerScriptInterface, DatabaseAwareInterface 
 
 	private string $minimumPhp = '8.1.0';
 
-	private string $minimumJoomla = '4.4.0';
+	private string $minimumJoomla = '5.4.0';
 
 	public function install(InstallerAdapter $adapter): bool
 	{

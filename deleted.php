@@ -143,6 +143,28 @@ $files = [
 // From v1.15.3 to case 11262
 '/media/lib_dpmedia/js',
 '/media/lib_dpmedia/css',
+
+// From v1.21.2 to case 12354
+'/plugins/media-action/dpborder/dpborder.php',
+'/plugins/media-action/dpconvert/dpconvert.php',
+'/plugins/media-action/dpemoji/dpemoji.php',
+'/plugins/media-action/dpfilter/dpfilter.php',
+'/plugins/media-action/dpline/dpline.php',
+'/plugins/media-action/dpshape/dpshape.php',
+'/plugins/media-action/dptext/dptext.php',
+
+// From v1.21.2 to update dependencies
+'/plugins/filesystem/dpamazon/vendor/akeeba/s3/rector.php',
+'/plugins/filesystem/dpftp/vendor/paragonie/random_compat',
+'/plugins/filesystem/dpftp/vendor/phpseclib/phpseclib/phpseclib/Crypt/Random.php',
+'/plugins/filesystem/dpftp/vendor/phpseclib/phpseclib/phpseclib/Exception/BadModeException.php',
+'/plugins/filesystem/dpftp/vendor/phpseclib/phpseclib/phpseclib/Exception/FileNotFoundException.php',
+'/plugins/filesystem/dpftp/vendor/phpseclib/phpseclib/phpseclib/Exception/InconsistentSetupException.php',
+'/plugins/filesystem/dpftp/vendor/phpseclib/phpseclib/phpseclib/Exception/InsufficientSetupException.php',
+'/plugins/filesystem/dpftp/vendor/phpseclib/phpseclib/phpseclib/Exception/UnableToConnectException.php',
+'/plugins/filesystem/dpftp/vendor/phpseclib/phpseclib/phpseclib/Exception/UnsupportedFormatException.php',
+'/plugins/filesystem/dpftp/vendor/phpseclib/phpseclib/phpseclib/Exception/UnsupportedOperationException.php',
+'/plugins/filesystem/dpftp/vendor/phpseclib/phpseclib/phpseclib/bootstrap.php',
 ];
 
 foreach ($files as $file) {

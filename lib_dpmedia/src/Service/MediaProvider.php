@@ -18,7 +18,6 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
-use Joomla\Event\DispatcherInterface;
 
 /**
  * General service provider class to deliver the plugin extension based on a namespace.
@@ -40,7 +39,6 @@ class MediaProvider implements ServiceProviderInterface
 			PluginInterface::class,
 			function (Container $container): object {
 				$plugin = new $this->extensionClassName(
-					$container->get(DispatcherInterface::class),
 					$container->get(ClientInterface::class),
 					$container->get(MimeTypeMapping::class),
 					$container->get(CacheControllerFactoryInterface::class),
